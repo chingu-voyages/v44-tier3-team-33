@@ -3,7 +3,7 @@ import { LooseAuthProp } from "@clerk/clerk-sdk-node";
 import "dotenv/config";
 
 const app = express();
-
+const port = process.env.PORT || 3001;
 declare global {
   namespace Express {
     interface Request extends LooseAuthProp {}
@@ -18,6 +18,6 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log(`app listening at http://localhost:3000`);
+app.listen(port, () => {
+  console.log(`app listening at http://localhost:${port}`);
 });
