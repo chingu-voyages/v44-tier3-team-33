@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { LooseAuthProp } from "@clerk/clerk-sdk-node";
 import "dotenv/config";
 
@@ -18,6 +19,13 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`app listening at http://localhost:${port}`);
-});
+mongoose
+  .connect(`${process.env.MONGODB_URI}`)
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`app listening at http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
