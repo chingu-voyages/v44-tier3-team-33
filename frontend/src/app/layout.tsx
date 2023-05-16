@@ -1,6 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
-import Navbar from '@/components/Navbar'
+import Navbar from '@/components/Navbar/Navbar'
 
 import "./globals.css";
 
