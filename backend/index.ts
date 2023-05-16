@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { LooseAuthProp } from "@clerk/clerk-sdk-node";
 import "dotenv/config";
+import { router } from "./routes/index.routes";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -12,6 +13,7 @@ declare global {
 }
 
 app.use(express.json());
+app.use(router);
 
 app.get("/", (req, res) => {
   res.json({
