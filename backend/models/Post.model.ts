@@ -7,10 +7,6 @@ export const PostSchema = new Schema({
     type: String,
     required: true,
   },
-  content: {
-    type: String,
-    required: true,
-  },
   image: {
     type: String,
     required: true,
@@ -33,6 +29,7 @@ export const PostSchema = new Schema({
   },
   condition: {
     type: String,
+    enum: ["poor", "good", "very good", "like new"],
     required: true,
   },
   price: {
