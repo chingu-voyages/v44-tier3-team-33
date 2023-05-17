@@ -15,6 +15,7 @@ This is a simple web application that allows users to search for secondhand book
   - Express
   - MongoDB
   - TypeScript
+  - Clerk
 
 # Get Started
 
