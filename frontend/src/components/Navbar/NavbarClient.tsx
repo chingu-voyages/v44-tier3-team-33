@@ -5,7 +5,8 @@ import { CiSearch } from "react-icons/ci"
 
 import { RxHamburgerMenu } from "react-icons/rx"
 
-function NavbarClient() {
+
+function NavbarClient({ userId}: {userId: string | null}) {
   const [isOpen, setIsOpen] = useState(false)
   const [searchBar, setSearchBar] = useState(false)
 
@@ -21,7 +22,7 @@ function NavbarClient() {
       <nav className={`flex  gap-4 ${isOpen ? "flex-col fixed left-0 top-[60px] xs:z-20 bg-white xs:shadow-lg p-4 w-full" : "hidden md:block md:flex-row md:w-auto "}`}>
         <Link className="hover:opacity-60 focus:opacity:60  md:pr-4" href="">Discover</Link>
         <Link className="hover:opacity-60 focus:opacity:60 md:pr-4" href="">Category</Link>
-        <Link className="hover:opacity-60 focus:opacity:60" href="">Saved</Link>
+        {userId && <Link className="hover:opacity-60 focus:opacity:60" href="">Saved</Link>}
       </nav> 
       <button onClick={toggleNav} className='md:hidden'>
         <RxHamburgerMenu />

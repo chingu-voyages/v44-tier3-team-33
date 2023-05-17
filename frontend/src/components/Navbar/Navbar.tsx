@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <header className="flex justify-between items-center px-8 py-4 shadow-md">
       <Link href="" className="font-bold text-xl">Logo</Link>
-      <NavbarClient />
+      <NavbarClient userId={userId} />
       {userId ?
         <>
           <Link href=""><RxAvatar className="text-4xl" /></Link>
