@@ -1,41 +1,41 @@
 "use client"
 import React, { useState } from 'react'
 import Link from "next/link"
-import { CiSearch } from "react-icons/ci"
+import { SignInButton, SignUpButton } from "@clerk/nextjs"
 
-import { RxHamburgerMenu } from "react-icons/rx"
+import { RxHamburgerMenu, RxAvatar } from "react-icons/rx"
+import { BsCart3 } from "react-icons/bs"
 
 
 function NavbarClient({ userId}: {userId: string | null}) {
   const [isOpen, setIsOpen] = useState(false)
-  const [searchBar, setSearchBar] = useState(false)
-
+  
   function toggleNav(){
     setIsOpen(prevOpen => !prevOpen)
   }
-  function toggleSearch(){
-    setSearchBar(prevSearchBar => !prevSearchBar)
-  }
-
+  
   return (
     <>
       <nav className={`flex  gap-4 ${isOpen ? "flex-col fixed left-0 top-[60px] xs:z-20 bg-white xs:shadow-lg p-4 w-full" : "hidden md:block md:flex-row md:w-auto "}`}>
-        <Link className="hover:opacity-60 focus:opacity:60  md:pr-4" href="">Discover</Link>
-        <Link className="hover:opacity-60 focus:opacity:60 md:pr-4" href="">Category</Link>
-        {userId && <Link className="hover:opacity-60 focus:opacity:60" href="">Saved</Link>}
+        <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60  md:pr-4" href="">Discover</Link>
+        <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60 md:pr-4" href="">Category</Link>
+        
+        {userId ?
+        <>
+          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60" href="">Saved</Link>
+          <Link href=""><RxAvatar className="text-4xl" /></Link>
+          <Link href=""><BsCart3 className="text-3xl"/></Link>
+        </> : 
+        <>
+          <button className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><SignInButton  /></button>
+          <button  className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><SignUpButton /></button>        
+        </>
+      }
       </nav> 
       <button onClick={toggleNav} className='md:hidden'>
         <RxHamburgerMenu />
       </button>
-      <input 
-        type="search" 
-        placeholder="Search for a book"
-        className={`${searchBar ? "xs:fixed xs:top-[70px]" : "hidden md:block"} p-2 border-2 border-gray-300 rounded-lg`}
-      />
-      <button onClick={toggleSearch} className='md:hidden'>
-        <CiSearch />
-      </button>
-       
+        
     </>
   )
 }
