@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-24 gap-5 ">
       {userId ? <UserButton /> : <SignInButton />}
-      <div><Post /></div>
     </main>
   );
 }
