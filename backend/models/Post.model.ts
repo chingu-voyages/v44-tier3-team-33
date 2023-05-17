@@ -40,6 +40,11 @@ export const PostSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  status: {
+    type: String,
+    enum: ["available", "sold"],
+    default: "available",
+  },
 });
 
 export const Post = mongoose.model("Post", PostSchema);
