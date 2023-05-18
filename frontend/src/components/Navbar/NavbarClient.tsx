@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react'
 import Link from "next/link"
-import { SignInButton, SignUpButton } from "@clerk/nextjs"
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
 
 import { RxHamburgerMenu, RxAvatar } from "react-icons/rx"
 import { BsCart3 } from "react-icons/bs"
@@ -21,21 +21,18 @@ function NavbarClient({ userId}: {userId: string | null}) {
         <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60 md:pr-4" href="">Category</Link>
         
         {userId ?
-        <>
-          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60" href="">Saved</Link>
-          <Link href=""><RxAvatar className="text-4xl" /></Link>
-          <Link href=""><BsCart3 className="text-3xl"/></Link>
-        </> : 
-        <>
-          <button className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><SignInButton  /></button>
-          <button  className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><SignUpButton /></button>        
-        </>
-      }
+          <>
+            <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60" href="">Saved</Link>
+            <Link href=""><RxAvatar className="text-4xl" /></Link>
+            <Link href=""><BsCart3 className="text-3xl"/></Link>
+            <button className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><UserButton /></button>
+          </> : 
+            <button className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><SignInButton  /></button>          
+        }
       </nav> 
       <button onClick={toggleNav} className='md:hidden'>
         <RxHamburgerMenu />
-      </button>
-        
+      </button>        
     </>
   )
 }
