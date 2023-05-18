@@ -1,9 +1,7 @@
-import CreatePostForm from "@/components/post/Form"
+import CreatePostForm from "@/components/post/CreatePostForm";
 
 const Post = () => {
-  return (
-    <CreatePostForm />
-  )
-}
+  return <CreatePostForm />;
+};
 
-export default Post
+export default Post;

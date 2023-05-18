@@ -1,7 +1,7 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-const f = createUploadthing();
-import { auth } from '@clerk/nextjs';
+import { auth } from "@clerk/nextjs";
+import { type FileRouter, createUploadthing } from "uploadthing/next";
 
+const f = createUploadthing();
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const bookUploadRouter = {
