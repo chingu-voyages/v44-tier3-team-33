@@ -2,6 +2,7 @@ import { Post } from "../models/Post.model";
 import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
 import { users } from "@clerk/clerk-sdk-node";
+import mongoose from "mongoose";
 
 //get all posts
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -80,7 +81,7 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
   // this might change to req.body
   const id = req.params.id;
   try {
-    const posts = await Post.find({ genres: id });
+    const posts = await Post.find({ genres: id, status: "available" });
     res.status(200).json(posts);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
@@ -185,6 +186,28 @@ export const updatePostStatus = async (req: Request, res: Response) => {
       { new: true }
     );
     res.status(200).json(updatedPost);
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+// add post to user's favourites
+
+export const addPostToFavourites = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const { userId } = req.body;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(404).send(`No post with id: ${id}`);
+    const user = await users.getUser(userId);
+    const favourites = user.privateMetadata.favourites as string[];
+    favourites.push(id.toString());
+    await users.updateUser(userId, {
+      privateMetadata: {
+        favourites: favourites,
+      },
+    });
+    res.status(200).json({ message: "Post added to favourites" });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
