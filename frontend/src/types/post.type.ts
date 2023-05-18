@@ -1,4 +1,4 @@
-type Posti = {
+type PostType = {
   id: string;
   createdBy: string;
   createdAt: Date;
@@ -7,5 +7,5 @@ type Posti = {
   content: string;
   imgs: string[];
   condition: number;
-  price: number;
+  author: string;
 }

@@ -1,8 +1,8 @@
-import React from 'react'
+import CreatePostForm from "@/components/post/Form"
 
 const Post = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start gap-5">Post</main>
+    <CreatePostForm />
   )
 }
 
