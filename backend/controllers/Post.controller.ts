@@ -1,7 +1,7 @@
 import { Post } from "../models/Post.model";
 import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
-import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
+import clerkClient, { Clerk, users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose from "mongoose";
 
 //get all posts
@@ -37,15 +37,36 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
   }
 };
 
-// get posts that are available
+// get posts that are available and populate user
 export const getAvailablePosts = async (req: Request, res: Response) => {
+  var data: any = [];
   try {
+    // const user = await users.getUser("user_2PpeVkhuhvEMNqb5LIrrc0K6RYX");
     const posts = await Post.find({ status: "available" });
-    console.log(posts);
-    res.status(200).json(posts);
+    for (const post of posts) {
+      const user = await users.getUser(post.createdBy);
+      if (post.createdBy === user.id) {
+        const userInfo = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.emailAddresses[0].emailAddress,
+          publicMetadata: user.publicMetadata,
+        };
+        data.push({ post, userInfo });
+      }
+    }
+    res.status(201).json(data);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
+};
+// get posts that are available and populate user
+export const getAvailablePost = async (req: Request, res: Response) => {
+  const user = await users.getUser("user_2PpeVkhuhvEMNqb5LIrrc0K6RYX");
+  console.log(user.id);
+  try {
+  } catch (error) {}
 };
 
 // get posts available by user id
