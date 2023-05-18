@@ -1,14 +1,41 @@
-# voyage-tasks
+# BOOKMART
 
-Your project's `readme` is as important to success as your code. For 
-this reason you should put as much care into its creation and maintenance
-as you would any other component of the application.
+# Overview
 
-If you are unsure of what should go into the `readme` let this article,
-written by an experienced Chingu, be your starting point - 
-[Keys to a well written README](https://tinyurl.com/yk3wubft).
+This is a simple web application that allows users to search for secondhand books, add them to their cart, and checkout.
 
-And before we go there's "one more thing"! Once you decide what to include
-in your `readme` feel free to replace the text we've provided here.
+# Built With
 
-> Own it & Make it your Own!
+- Frontend
+  - Next.js
+  - Clerk
+  - Tailwind CSS
+- Backend
+  - Node.js
+  - Express
+  - MongoDB
+  - TypeScript
+  - Clerk
+
+# Get Started
+
+## Prerequisites
+
+- Make sure that you have nodejs is installed on your machine by running `node -v`.
+- Also you should have npm ( Node Package Manager) installed by running `npm -v`.
+- Make sure to set a MongoDB database.
+- Make sure to set up a Clerk account and create a Clerk application.
+
+## Installation
+
+Since this project will hold both the client application and the server application there will be node modules in two different places.
+
+- Run `npm install` in both :file_folder: **backend** and :file_folder: **frontend** folders.
+- Add your `.env` file following the **.env.example** in the :file_folder: **backend** folder as well as the frontend one.
+
+## Usage
+
+- backend
+  - Run `npm run dev` to start the server.
+- frontend
+  - Run `npm run dev` to start the client application.

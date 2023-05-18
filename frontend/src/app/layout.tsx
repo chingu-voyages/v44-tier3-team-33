@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import "@uploadthing/react/styles.css";
 import { Inter } from "next/font/google";
+import Navbar from '@/components/Navbar/Navbar'
 
 import "./globals.css";
 
@@ -20,8 +21,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
+          <Navbar />
           <main className="flex min-h-screen flex-col items-center justify-start gap-5  px-2 py-3">
-            {children}
+            {children} 
           </main>
         </body>
       </html>
