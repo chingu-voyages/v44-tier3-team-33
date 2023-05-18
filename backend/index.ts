@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import { LooseAuthProp } from "@clerk/clerk-sdk-node";
 import "dotenv/config";
 import { router } from "./routes/index.routes";
@@ -13,6 +14,7 @@ declare global {
 }
 
 app.use(express.json());
+app.use(cors());
 app.use(router);
 
 app.get("/", (req, res) => {
