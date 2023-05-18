@@ -13,10 +13,9 @@ export const bookUploadRouter = {
     .middleware(async (req) => {
       // This code runs on your server before upload
       const { userId } = auth();
-
       // If you throw, the user will not be able to upload
       if (!userId) throw new Error("Unauthorized");
-
+      console.log("req body", req.body);
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId };
     })

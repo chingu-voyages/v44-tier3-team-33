@@ -31,16 +31,7 @@ const defaultValues = {
 type FormValuesType = z.infer<typeof FormSchema>;
 
 const CreatePostForm = () => {
-  const [imagesURLs, setImagesURLs] = useState<string[]>([
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-    "https://uploadthing.com/f/76913bd5-998c-4583-b9c9-c3ea3ccdeb3d_image.webp",
-  ]);
+  const [imagesURLs, setImagesURLs] = useState<string[]>([]);
 
   const {
     register,
@@ -59,6 +50,9 @@ const CreatePostForm = () => {
     const validateImagesParsed = validateImages.safeParse(imagesURLs);
     if (!validateImagesParsed.success) {
       // Error
+      if (imagesURLs.length > 4) {
+        alert("Max 4 images");
+      }
       return;
     }
     //   Fetch Backend
@@ -109,30 +103,41 @@ const CreatePostForm = () => {
           register={register("condition")}
         />
 
-        <div className="flex h-44 items-center justify-center overflow-y-hidden overflow-x-scroll border border-gray-600 p-2">
+        <div className="relative flex h-[170px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
           {imagesURLs.length <= 0 ? (
-            <div className="text-red-500">Please upload at least one image</div>
+            <div className="text-red-500">
+              Please upload at least one image max 4 images
+            </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="relative flex gap-2">
               {imagesURLs.map((img, i) => (
-                <Image
-                  key={i}
-                  src={img}
-                  height={150}
-                  width={100}
-                  alt="img"
-                  className="h-[150px] w-[100px] object-scale-down"
-                />
+                <div
+                  key={img.slice(25, img.length)}
+                  className=" scale-down relative flex h-[150px] w-[100px] items-center justify-center border border-gray-600 p-2 "
+                >
+                  <Image
+                    src={img}
+                    height={150}
+                    width={100}
+                    alt="img"
+                    className="h-[150px] w-[100px] object-scale-down  "
+                  />
+                  <div
+                    className="absolute right-0 top-0 m-0 flex cursor-pointer items-center justify-center rounded-full bg-red-500 px-2 py-1 text-center text-xs hover:bg-blue-500 "
+                    onClick={() => {
+                      let newImages = [...imagesURLs];
+                      newImages.splice(i, 1);
+                      setImagesURLs(newImages);
+                    }}
+                  >
+                    x
+                  </div>
+                  {imagesURLs.length > 4}
+                </div>
               ))}
             </div>
           )}
-          {/* {imagesURLs.length > 4 ? (
-            <div className="text-red-500">Please upload max 4 images only</div>
-          ) : (
-            ""
-          )} */}
         </div>
-
         <PrimaryButton type="submit" label="Submit" />
       </form>
       <UploadFiles setImages={setImagesURLs} images={imagesURLs} />
@@ -154,9 +159,9 @@ const UploadFiles: React.FC<{
         onClientUploadComplete={(res) => {
           // Do something with the response
           console.log("Files: ", res);
-          let imgs = res?.map((img) => img.fileUrl);
-          if (imgs) {
-            setImages(imgs);
+          let newImages = res?.map((img) => img.fileUrl);
+          if (newImages) {
+            setImages([...images, ...newImages]);
           }
           alert("Upload Completed");
         }}
