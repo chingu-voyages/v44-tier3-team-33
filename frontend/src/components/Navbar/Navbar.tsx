@@ -7,11 +7,13 @@ function Navbar() {
 
   return (
     <header className="flex justify-between items-center px-8 py-4 shadow-md relative text-black">
+
       <Link href="" className="font-bold text-xl md:mr-4">Logo</Link>
       <input 
         type="search" 
         placeholder="Search for a book"
         className="absolute top-[60px] xs:pl-8 md:pl-4 left-0 w-full md:static  p-2 border-2 xs:border-x-0 md:border-x-2 border-gray-300 md:rounded-lg md:w-48 lg:w-80"
+
       />
       <NavbarClient userId={userId} />
     </header>
