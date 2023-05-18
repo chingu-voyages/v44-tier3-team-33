@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
 import "@uploadthing/react/styles.css";
+import { Inter } from "next/font/google";
+
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,11 +20,11 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          <main className="flex min-h-screen flex-col items-center justify-start gap-5 " >
+          <main className="flex min-h-screen flex-col items-center justify-start gap-5  px-2 py-3">
             {children}
           </main>
         </body>
       </html>
-    </ClerkProvider >
+    </ClerkProvider>
   );
 }
