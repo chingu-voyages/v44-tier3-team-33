@@ -1,17 +1,19 @@
+import { type BookConditionEnum, type BookGenreEnum } from "@/types/post.types";
 import {
-  BookConditionEnum,
-  BookConditionType,
-  BookGenreEnum,
-  BookGenreType,
-} from "@/types/post.types";
-import { MultiSelectBox, MultiSelectBoxItem } from "@tremor/react";
+  MultiSelectBox,
+  MultiSelectBoxItem,
+  SelectBox,
+  SelectBoxItem,
+} from "@tremor/react";
 import { type HTMLInputTypeAttribute, useState } from "react";
 import type {
+  Control,
   FieldError,
   FieldErrorsImpl,
   Merge,
   UseFormRegisterReturn,
 } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 export const FromInput: React.FC<{
   name: string;
@@ -73,21 +75,53 @@ export const FromSelect: React.FC<{
   values: string[] | typeof BookConditionEnum | typeof BookGenreEnum;
   name: string;
   label: string;
-  register: UseFormRegisterReturn<string>;
+  control: Control<any, any>;
   error?:
     | string
     | FieldError
     | Merge<FieldError, FieldErrorsImpl<any>>
     | undefined;
-}> = ({ name, label, register, error, values }) => {
+  multiple: boolean;
+}> = ({ name, label, error, values, multiple, control }) => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
+  if (multiple) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <MultiSelectBox {...field}
+          onValueChange={(value) => {
+            field.onChange(value);
+          }}
+          >
+            {values.map((value) => (
+              <MultiSelectBoxItem key={value} text={value} value={value} />
+            ))}
+          </MultiSelectBox>
+        )}
+      />
+    );
+  }
+
   return (
-    <MultiSelectBox>
-      {values.map((value) => (
-        <MultiSelectBoxItem key={value} text={value} value={value} />
-      ))}
-    </MultiSelectBox>
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <SelectBox
+          {...field}
+          onValueChange={(value) => {
+            field.onChange(value);
+          }}
+        >
+          {values.map((value) => (
+            <SelectBoxItem key={value} text={value} value={value} />
+          ))}
+        </SelectBox>
+      )}
+    />
   );
 };
 

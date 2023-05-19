@@ -1,12 +1,11 @@
 "use client";
 
 import { BookUploadRouter } from "@/app/api/uploadthing/core";
-import { BookConditionEnum } from "@/types/post.types";
+import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import axios from "axios";
 import Image from "next/image";
-import { env } from "process";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { generateMimeTypes } from "uploadthing/client";
@@ -27,9 +26,9 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   author: z.string().min(1, { message: "Author is required" }),
   description: z.string().min(5, { message: "short description min 5" }),
+  condition: z.string().min(1, { message: "Condition is required" }),
   price: z.string().min(1, { message: "Price is required" }),
-  genre: z.string(),
-  condition: z.string(),
+  genre: z.string().array().min(1, { message: "Genre is required" }),
 });
 
 const defaultValues = {
@@ -37,7 +36,7 @@ const defaultValues = {
   author: "",
   description: "",
   price: "",
-  genre: "",
+  genre: [],
   condition: "",
 };
 
@@ -49,6 +48,7 @@ const CreatePostForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormValuesType>({
     resolver: zodResolver(FormSchema),
@@ -68,7 +68,7 @@ const CreatePostForm = () => {
       }
       return;
     }
-    //   Fetch Backend
+    // Fetch Backend
     console.log("Data: ", data);
     console.log("Images: ", imagesURLs);
   };
@@ -113,10 +113,18 @@ const CreatePostForm = () => {
           register={register("price")}
         />
         <FromSelect
+          control={control}
           name="condition"
           label="Condition"
-          register={register("condition")}
           values={BookConditionEnum}
+          multiple={false}
+        />
+        <FromSelect
+          control={control}
+          name="genre"
+          label="Condition"
+          values={BookGenreEnum}
+          multiple={true}
         />
 
         <div className="relative flex h-[170px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
