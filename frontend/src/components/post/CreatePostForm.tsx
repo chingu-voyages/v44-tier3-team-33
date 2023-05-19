@@ -1,6 +1,7 @@
 "use client";
 
 import { BookUploadRouter } from "@/app/api/uploadthing/core";
+import { BookConditionEnum } from "@/types/post.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import axios from "axios";
@@ -11,7 +12,13 @@ import { useForm } from "react-hook-form";
 import { generateMimeTypes } from "uploadthing/client";
 import { z } from "zod";
 
-import { FromInput, FromTextArea, PrimaryButton, Spinner } from "../utils";
+import {
+  FromInput,
+  FromSelect,
+  FromTextArea,
+  PrimaryButton,
+  Spinner,
+} from "../utils";
 
 const { uploadFiles, useUploadThing } =
   generateReactHelpers<BookUploadRouter>();
@@ -105,13 +112,11 @@ const CreatePostForm = () => {
           error={errors.price?.message}
           register={register("price")}
         />
-        <FromInput
-          type="text"
-          label="Condition"
+        <FromSelect
           name="condition"
-          placeholder="Condition"
-          error={errors.condition?.message}
+          label="Condition"
           register={register("condition")}
+          values={BookConditionEnum}
         />
 
         <div className="relative flex h-[170px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
@@ -138,18 +143,14 @@ const CreatePostForm = () => {
                     onClick={async () => {
                       try {
                         // until they fix it
-
-                        // const res = await axios.delete(
+                        // const res = await axios.post(
                         //   `https://uploadthing.com/api/deleteFile`,
                         //   {
                         //     headers: {
-                        //       "Content-Type": "application/json",
                         //       "x-uploadthing-api-key":
                         //         process.env.UPLOADTHING_SECRET,
                         //     },
-                        //     data: [
-                        //       img.slice(26, img.length),
-                        //     ],
+                        //     data: { files: [img.slice(26, img.length)] },
                         //   }
                         // );
                         // console.log("Delete Response: ", res);

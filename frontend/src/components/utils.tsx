@@ -1,4 +1,11 @@
-import { type HTMLInputTypeAttribute } from "react";
+import {
+  BookConditionEnum,
+  BookConditionType,
+  BookGenreEnum,
+  BookGenreType,
+} from "@/types/post.types";
+import { MultiSelectBox, MultiSelectBoxItem } from "@tremor/react";
+import { type HTMLInputTypeAttribute, useState } from "react";
 import type {
   FieldError,
   FieldErrorsImpl,
@@ -25,6 +32,7 @@ export const FromInput: React.FC<{
       </label>
       <p className=" text-xs text-red-500">{error ? String(error) : ""}</p>
       <input
+        id={name}
         type={type}
         placeholder={placeholder}
         className=" rounded-md border border-gray-500 p-1 outline-none "
@@ -52,11 +60,34 @@ export const FromTextArea: React.FC<{
       </label>
       <p className=" text-xs text-red-500">{error ? String(error) : ""}</p>
       <textarea
+        id={name}
         placeholder={placeholder}
         className=" min-h-[200px] rounded-md border border-gray-500 p-1 outline-none "
         {...register}
       />
     </div>
+  );
+};
+
+export const FromSelect: React.FC<{
+  values: string[] | typeof BookConditionEnum | typeof BookGenreEnum;
+  name: string;
+  label: string;
+  register: UseFormRegisterReturn<string>;
+  error?:
+    | string
+    | FieldError
+    | Merge<FieldError, FieldErrorsImpl<any>>
+    | undefined;
+}> = ({ name, label, register, error, values }) => {
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+
+  return (
+    <MultiSelectBox>
+      {values.map((value) => (
+        <MultiSelectBoxItem key={value} text={value} value={value} />
+      ))}
+    </MultiSelectBox>
   );
 };
 
