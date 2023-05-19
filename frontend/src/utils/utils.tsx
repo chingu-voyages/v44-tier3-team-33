@@ -1,20 +1,26 @@
 import axios from "axios"
 
 export type PostType = {
-  _id: string,
-  createdBy: string,
-  image: string,
-  author: string,
-  title: string,
-  genres: string,
-  isbn: string,
-  condition: string,
-  price: number,
-  status: string,
-  createdDate: Date,
+  post: {
+    _id: string,
+    createdBy: string,
+    image: string,
+    author: string,
+    title: string,
+    genres: string,
+    isbn: string,
+    condition: string,
+    price: number,
+    status: string,
+    createdDate: Date,
+  },
+  userInfo:{
+    firstName: string;
+    lastName: string
+  }
 }
 
-const url = "http://localhost:3000"
+const url= "https://v44-tier3-team-33-u43g-heypbzh2c-eslemouederni.vercel.app/"
 
 export async function getPosts(){
   try {

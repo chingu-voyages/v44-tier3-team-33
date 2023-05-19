@@ -1,11 +1,12 @@
 import { PostType, getPosts } from '@/utils/utils'
-import Post from '@/components/Post/Post'
+import PostGrid from '@/components/Post/PostGrid';
 
 export default async function Home() {
-  const posts = await getPosts()
+  const posts: PostType[] = await getPosts()
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 ">  
-      {posts.map((post: PostType) => <Post key={post._id} />)}
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 "> 
+      <PostGrid posts={posts} /> 
     </main>
   );
 }
