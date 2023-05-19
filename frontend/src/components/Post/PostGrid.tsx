@@ -17,7 +17,7 @@ export type PostCardType= {
 
 function PostGrid({ posts }: {posts: PostType[]}) {
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center gap-8'>
+    <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center justify-items-center gap-8'>
         {posts.map((postItem: PostCardType) => <Post key={postItem.post._id} postItem={postItem} />)}        
     </div> 
   )
