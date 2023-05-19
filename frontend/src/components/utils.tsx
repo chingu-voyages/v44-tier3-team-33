@@ -23,7 +23,7 @@ export const FromInput: React.FC<{
       <label className="text-gray-700" htmlFor={name}>
         {label}:
       </label>
-      <p className=" text-xs">{error ? String(error) : ""}</p>
+      <p className=" text-xs text-red-500">{error ? String(error) : ""}</p>
       <input
         type={type}
         placeholder={placeholder}
@@ -65,7 +65,8 @@ export const PrimaryButton: React.FC<{
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
-}> = ({ className, type, label, onClick }) => {
+  disabled?: boolean;
+}> = ({ className, type, label, onClick, disabled }) => {
   return (
     <button
       onClick={() => {
@@ -74,9 +75,26 @@ export const PrimaryButton: React.FC<{
         }
       }}
       type={type ? type : "button"}
-      className={`w-full rounded-full border border-gray-500 px-3 py-2 text-white transition-colors duration-500 hover:bg-gray-900 ${className}`}
+      className={`w-full rounded-full border border-gray-500 px-3 py-2 text-black transition-colors duration-500 hover:bg-gray-900 ${className}`}
+      disabled={disabled}
     >
       {label}
     </button>
+  );
+};
+
+export const Spinner = () => {
+  return (
+    <svg
+      className="ut-animate-spin h-5 w-5 text-black"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 576 512"
+    >
+      <path
+        fill="currentColor"
+        d="M256 32C256 14.33 270.3 0 288 0C429.4 0 544 114.6 544 256C544 302.6 531.5 346.4 509.7 384C500.9 399.3 481.3 404.6 465.1 395.7C450.7 386.9 445.5 367.3 454.3 351.1C470.6 323.8 480 291 480 255.1C480 149.1 394 63.1 288 63.1C270.3 63.1 256 49.67 256 31.1V32z"
+      />
+    </svg>
   );
 };

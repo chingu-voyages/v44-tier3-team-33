@@ -1,4 +1,3 @@
-import Post from "@/components/post/Post";
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs";
 
