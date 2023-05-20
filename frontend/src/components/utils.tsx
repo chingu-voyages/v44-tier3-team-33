@@ -28,16 +28,18 @@ export const FromInput: React.FC<{
   type: HTMLInputTypeAttribute;
 }> = ({ name, label, register, error, type, placeholder }) => {
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col text-lg">
       <label className="text-gray-700" htmlFor={name}>
         {label}:
       </label>
-      <p className=" text-xs text-red-500">{error ? String(error) : ""}</p>
+      <p className=" text-sm font-bold text-red-500 ">
+        {error ? String(error) : ""}
+      </p>
       <input
         id={name}
         type={type}
         placeholder={placeholder}
-        className=" rounded-md border border-gray-500 p-1 outline-none "
+        className=" rounded-md border border-gray-300 p-2 outline-none "
         {...register}
       />
     </div>
@@ -56,15 +58,17 @@ export const FromTextArea: React.FC<{
   placeholder?: string;
 }> = ({ name, register, error, placeholder, label }) => {
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col text-lg">
       <label className="text-gray-700" htmlFor={name}>
         {label}:
       </label>
-      <p className=" text-xs text-red-500">{error ? String(error) : ""}</p>
+      <p className=" text-sm font-bold text-red-500">
+        {error ? String(error) : ""}
+      </p>
       <textarea
         id={name}
         placeholder={placeholder}
-        className=" min-h-[200px] rounded-md border border-gray-500 p-1 outline-none "
+        className=" min-h-[200px] rounded-md border border-gray-300 p-2 outline-none "
         {...register}
       />
     </div>
@@ -84,44 +88,56 @@ export const FromSelect: React.FC<{
   multiple: boolean;
 }> = ({ name, label, error, values, multiple, control }) => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-
-  if (multiple) {
-    return (
+  return (
+    <div className="text-lg">
+      <label className="text-gray-700" htmlFor={name}>
+        {label}:
+      </label>
+      <div className="flex w-full flex-wrap gap-2 text-sm ">
+        {selectedValues.map((value) => (
+          <span key={value} className=" bg-gray-300 p-1">
+            {value}
+          </span>
+        ))}
+      </div>
+      <p className=" text-sm font-bold text-red-500">
+        {error ? String(error) : ""}
+      </p>
       <Controller
         name={name}
         control={control}
-        render={({ field }) => (
-          <MultiSelectBox {...field}
-          onValueChange={(value) => {
-            field.onChange(value);
-          }}
-          >
-            {values.map((value) => (
-              <MultiSelectBoxItem key={value} text={value} value={value} />
-            ))}
-          </MultiSelectBox>
-        )}
+        render={({ field }) =>
+          multiple ? (
+            <MultiSelectBox
+              id={name}
+              placeholder={label}
+              {...field}
+              onValueChange={(value) => {
+                setSelectedValues(value);
+                field.onChange(value);
+              }}
+            >
+              {values.map((value) => (
+                <MultiSelectBoxItem key={value} text={value} value={value} />
+              ))}
+            </MultiSelectBox>
+          ) : (
+            <SelectBox
+              id={name}
+              placeholder={label}
+              {...field}
+              onValueChange={(value) => {
+                field.onChange(value);
+              }}
+            >
+              {values.map((value) => (
+                <SelectBoxItem key={value} text={value} value={value} />
+              ))}
+            </SelectBox>
+          )
+        }
       />
-    );
-  }
-
-  return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field }) => (
-        <SelectBox
-          {...field}
-          onValueChange={(value) => {
-            field.onChange(value);
-          }}
-        >
-          {values.map((value) => (
-            <SelectBoxItem key={value} text={value} value={value} />
-          ))}
-        </SelectBox>
-      )}
-    />
+    </div>
   );
 };
 
@@ -140,7 +156,7 @@ export const PrimaryButton: React.FC<{
         }
       }}
       type={type ? type : "button"}
-      className={`w-full rounded-full border border-gray-500 px-3 py-2 text-black transition-colors duration-500 hover:bg-gray-900 ${className}`}
+      className={`w-full rounded-full border border-gray-500 bg-white px-3 py-2 text-slate-600 transition-colors duration-500 hover:bg-slate-950 hover:text-white ${className}`}
       disabled={disabled}
     >
       {label}

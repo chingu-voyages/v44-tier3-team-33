@@ -74,9 +74,9 @@ const CreatePostForm = () => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="flex w-full flex-col items-center justify-center gap-5">
       <form
-        className="flex flex-col gap-3 text-black "
+        className="flex flex-col gap-3 text-black lg:w-2/5"
         onSubmit={handleSubmit((data) => {
           submitForm({ data, imagesURLs: imagesURLs });
         })}
@@ -113,18 +113,20 @@ const CreatePostForm = () => {
           register={register("price")}
         />
         <FromSelect
-          control={control}
-          name="condition"
           label="Condition"
-          values={BookConditionEnum}
+          name="condition"
           multiple={false}
+          error={errors.condition?.message}
+          values={BookConditionEnum}
+          control={control}
         />
         <FromSelect
-          control={control}
+          label="Genre"
           name="genre"
-          label="Condition"
-          values={BookGenreEnum}
           multiple={true}
+          error={errors.genre?.message}
+          values={BookGenreEnum}
+          control={control}
         />
 
         <div className="relative flex h-[170px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
@@ -147,7 +149,7 @@ const CreatePostForm = () => {
                     className="h-[150px] w-[100px] object-scale-down  "
                   />
                   <div
-                    className="absolute right-0 top-0 m-0 flex cursor-pointer items-center justify-center rounded-full bg-red-500 px-2 py-1 text-center text-xs hover:bg-blue-500 "
+                    className="absolute right-0 top-0 m-0 flex cursor-pointer items-center justify-center rounded-full  bg-white px-2 py-1 text-center text-xs hover:bg-slate-950 hover:text-white "
                     onClick={async () => {
                       try {
                         // until they fix it
