@@ -7,7 +7,7 @@ export type PostType = {
   description: string;
   imgs: string[];
   condition: BookConditionType;
-  genre: BookGenreType;
+  genre: BookGenreType[];
 };
 
 export const BookConditionEnum = [

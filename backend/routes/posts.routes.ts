@@ -34,9 +34,13 @@ postRouter.post(
   validateReq(createPostSchema),
   createPost
 );
-postRouter.put("/update/:id", updatePost);
-postRouter.put("/updateStatus/:id", updatePostStatus);
-postRouter.delete("/delete/:id", deletePost);
-postRouter.put("/addFavourite/:id", addPostToFavourites);
+postRouter.put("/update/:id", ClerkExpressWithAuth(), updatePost);
+postRouter.put("/updateStatus/:id", ClerkExpressWithAuth(), updatePostStatus);
+postRouter.delete("/delete/:id", ClerkExpressWithAuth(), deletePost);
+postRouter.put(
+  "/addFavourite/:id",
+  ClerkExpressWithAuth(),
+  addPostToFavourites
+);
 
 export { postRouter };

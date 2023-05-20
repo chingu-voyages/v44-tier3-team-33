@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BookConditionEnum, BookGenreEnum } from "../types/post.types";
 
 export const createPostSchema = z.object({
   body: z.object({
@@ -9,9 +10,12 @@ export const createPostSchema = z.object({
         .string()
         .min(5, { message: "short description min 5" })
         .max(300),
-      condition: z.string().min(1, { message: "Condition is required" }),
+      condition: z.enum(BookConditionEnum),
       price: z.number().min(1, { message: "Price is required" }),
-      genre: z.string().array().min(1, { message: "Genre is required" }),
+      genre: z
+        .enum(BookGenreEnum)
+        .array()
+        .min(1, { message: "Genre is required" }),
       imagesURLs: z.string().url().array().min(1).max(4),
     }),
   }),

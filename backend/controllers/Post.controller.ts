@@ -149,7 +149,8 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
     post.genre.map(async (genre) => {
       const genreNew = await Genre.findOne({ genreName: genre });
       if (genreNew) return genreNew._id;
-      return;
+      const createdGenre = await Genre.create({ genreName: genre });
+      return createdGenre._id;
     })
   );
 
