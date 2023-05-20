@@ -1,6 +1,7 @@
 import { PostType, getPosts } from '@/utils/utils'
 import PostGrid from '@/components/Post/PostGrid';
 
+
 export default async function Home() {
   const posts: PostType[] = await getPosts()
 

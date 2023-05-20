@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { BookConditionEnum } from "../types/post.types";
 
 const Schema = mongoose.Schema;
 
@@ -7,8 +8,8 @@ export const PostSchema = new Schema({
     type: String,
     required: true,
   },
-  image: {
-    type: String,
+  imgs: {
+    type: [String],
     required: true,
   },
   author: {
@@ -20,23 +21,22 @@ export const PostSchema = new Schema({
     required: true,
   },
   genres: {
-    type: Schema.Types.ObjectId,
+    type: [Schema.Types.ObjectId],
     ref: "Genre",
   },
   isbn: {
     type: String,
-    required: true,
   },
   condition: {
     type: String,
-    enum: ["poor", "good", "very good", "like new"],
+    enum: BookConditionEnum,
     required: true,
   },
   price: {
     type: Number,
     required: true,
   },
-  createdDate: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },
