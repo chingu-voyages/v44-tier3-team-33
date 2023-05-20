@@ -19,7 +19,7 @@ function NavbarClient({ userId}: {userId: string | null}) {
 
       <nav className={`flex  gap-4 ${isOpen ? "flex-col fixed left-0 top-[60px] xs:z-20 bg-white xs:shadow-lg p-4 w-full" : "hidden md:inline-flex md:w-[65%] justify-end items-center"}`}>
         {/* <div> */}
-          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60  md:pr-2" href="">Discover</Link>
+          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60  md:pr-2" href="/">Discover</Link>
           <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60 md:ml-0 md:pr-2" href="">Category</Link>
         {/* </div> */}
         
