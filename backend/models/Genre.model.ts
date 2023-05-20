@@ -1,36 +1,12 @@
 import mongoose from "mongoose";
+import { BookGenreEnum } from "../types/post.types";
 
 const Schema = mongoose.Schema;
 
 export const GenreSchema = new Schema({
   genreName: {
     type: String,
-    enum: [
-      "Action and Adventure",
-      "Classics",
-      "Contemporary Fiction",
-      "Detective and Mystery",
-      "Fantasy",
-      "Historical Fiction",
-      "Horror",
-      "Romance",
-      "Science Fiction",
-      "Thriller",
-      "Biography and Autobiography",
-      "Business and Economics",
-      "Cookbooks",
-      "Education",
-      "History",
-      "Humor",
-      "Literary Criticism",
-      "Memoir",
-      "Natural History",
-      "Philosophy",
-      "Religion",
-      "Self-Help",
-      "Science",
-      "Technology",
-    ],
+    enum: BookGenreEnum,
     required: true,
   },
   posts: [

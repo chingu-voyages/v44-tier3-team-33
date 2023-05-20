@@ -2,6 +2,7 @@
 
 import { BookUploadRouter } from "@/app/api/uploadthing/core";
 import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
+import { useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import axios from "axios";
@@ -25,9 +26,12 @@ const { uploadFiles, useUploadThing } =
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   author: z.string().min(1, { message: "Author is required" }),
-  description: z.string().min(5, { message: "short description min 5" }),
+  description: z
+    .string()
+    .min(5, { message: "short description min 5" })
+    .max(300),
   condition: z.string().min(1, { message: "Condition is required" }),
-  price: z.string().min(1, { message: "Price is required" }),
+  price: z.number().min(1, { message: "Price is required" }),
   genre: z.string().array().min(1, { message: "Genre is required" }),
 });
 
@@ -35,7 +39,7 @@ const defaultValues = {
   title: "",
   author: "",
   description: "",
-  price: "",
+  price: 0,
   genre: [],
   condition: "",
 };
@@ -44,6 +48,7 @@ type FormValuesType = z.infer<typeof FormSchema>;
 
 const CreatePostForm = () => {
   const [imagesURLs, setImagesURLs] = useState<string[]>([]);
+  const { getToken } = useAuth();
 
   const {
     register,
@@ -59,24 +64,35 @@ const CreatePostForm = () => {
     data: FormValuesType;
     imagesURLs: string[];
   }) => void = async ({ data, imagesURLs }) => {
-    const validateImages = z.string().url().array().min(1).max(4);
-    const validateImagesParsed = validateImages.safeParse(imagesURLs);
-    if (!validateImagesParsed.success) {
-      // Error
-      if (imagesURLs.length > 4) {
-        alert("Max 4 images");
+    try {
+      const validateImages = z.string().url().array().min(1).max(4);
+      const validateImagesParsed = validateImages.safeParse(imagesURLs);
+      if (!validateImagesParsed.success) {
+        // Error
+        if (imagesURLs.length > 4) {
+          alert("Max 4 images");
+        }
+        return;
       }
-      return;
+      // Fetch Backend
+
+      const createPost = await axios.post(
+        `http://localhost:3001/posts/create`,
+        { post: { ...data, imagesURLs: imagesURLs } },
+        { headers: { Authorization: await getToken() } }
+      );
+      console.log("Req: ", createPost);
+      console.log("Data: ", data);
+      console.log("Images: ", imagesURLs);
+    } catch (e) {
+      console.log(e);
     }
-    // Fetch Backend
-    console.log("Data: ", data);
-    console.log("Images: ", imagesURLs);
   };
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5">
       <form
-        className="flex flex-col gap-3 text-black lg:w-2/5"
+        className="flex w-full flex-col gap-3 text-black lg:w-2/5"
         onSubmit={handleSubmit((data) => {
           submitForm({ data, imagesURLs: imagesURLs });
         })}
@@ -110,7 +126,11 @@ const CreatePostForm = () => {
           name="price"
           placeholder="Price"
           error={errors.price?.message}
-          register={register("price")}
+          register={register("price", {
+            setValueAs(value) {
+              return Number(value);
+            },
+          })}
         />
         <FromSelect
           label="Condition"
