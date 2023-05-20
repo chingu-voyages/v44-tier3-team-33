@@ -23,18 +23,10 @@ function NavbarClient({ userId }: { userId: string | null }) {
         }`}
       >
         {/* <div> */}
-        <Link
-          className="focus:opacity:60 hover:opacity-60 xs:ml-4  md:pr-2"
-          href=""
-        >
-          Discover
-        </Link>
-        <Link
-          className="focus:opacity:60 hover:opacity-60 xs:ml-4 md:ml-0 md:pr-2"
-          href=""
-        >
-          Category
-        </Link>
+
+          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60  md:pr-2" href="/">Discover</Link>
+          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60 md:ml-0 md:pr-2" href="">Category</Link>
+
         {/* </div> */}
 
         {userId ? (
