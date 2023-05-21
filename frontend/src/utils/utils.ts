@@ -1,34 +1,19 @@
 import axios from "axios"
-
-export type PostType = {
-  post: {
-    _id: string,
-    createdBy: string,
-    image: string,
-    author: string,
-    title: string,
-    genres: string,
-    isbn: string,
-    condition: string,
-    price: number,
-    status: string,
-    createdDate: Date,
-  },
-  userInfo:{
-    firstName: string;
-    lastName: string
-  }
-}
+import { PostType } from '@/types/post.types';
+import { UserType } from '@/types/user.types';
 
 const url= "https://v44-tier3-team-33-u43g-heypbzh2c-eslemouederni.vercel.app/"
 
 export async function getPosts(){
   try {
-    const response = await fetch(`${url}/posts`)
-    const data = await response.json()
-    return data
+    const response = await axios.get<{post:PostType, userInfo: UserType}[]>(`${url}/posts`)
+    if(response.status !== 200 , !response.data){
+        // This will activate the closest `error.js` Error Boundary
+        throw new Error('Failed to fetch data');
+    }
+    return response.data
 
   } catch(error: any){
-    return error.message
+    console.log(error)
   }
 }
