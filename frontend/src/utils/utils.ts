@@ -32,3 +32,15 @@ export async function getPosts(){
     return error.message
   }
 }
+
+export async function getGenres(){
+  try {
+    const response = await fetch(`${url}/genres`)
+    const data = await response.json()
+    return data
+
+  } catch (error: any){
+    return error.message
+  }
+}
+
