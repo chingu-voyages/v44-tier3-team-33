@@ -20,7 +20,7 @@ import {
   Spinner,
 } from "../utils";
 
-const { uploadFiles, useUploadThing } =
+const {  useUploadThing } =
   generateReactHelpers<BookUploadRouter>();
 
 const FormSchema = z.object({
