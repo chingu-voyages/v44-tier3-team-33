@@ -1,7 +1,7 @@
 import { Post } from "../models/Post.model";
 import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
-import clerkClient, { Clerk, users, WithAuthProp } from "@clerk/clerk-sdk-node";
+import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose from "mongoose";
 import { CreatePostType } from "../validation/post.validate";
 
@@ -131,17 +131,17 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
   const {
     body: { post },
   } = req as CreatePostType;
-
-  console.log(post);
+  2;
+  console.log(req.auth.userId);
 
   if (!req.auth.userId || !req.auth) {
-    return res.status(409).json({ message: "this user is not authed" });
+    return res.status(401).json({ message: "this user is not authed" });
   }
 
   const user = await users.getUser(req.auth.userId);
 
   if (!user.id) {
-    return res.status(409).json({ message: "this user is not authed" });
+    return res.status(401).json({ message: "this user is not authed" });
   }
 
   // find genre by id
@@ -158,6 +158,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
     const newPost = await Post.create({
       createdBy: user.id,
       genres: postGenres,
+      imgs: post.imagesURLs,
       ...post,
     });
     console.log(newPost);
@@ -185,9 +186,9 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
       });
       console.log(user.publicMetadata.posts);
     }
-    res.status(201).json(newPost);
+    return res.status(200).json(newPost);
   } catch (error) {
-    res.status(409).json({ message: error });
+    return res.status(409).json({ message: error });
   }
 };
 
@@ -234,9 +235,9 @@ export const updatePostStatus = async (req: Request, res: Response) => {
   }
 };
 
-// add post to user's favourites
+// add post to user's Favorites
 
-export const addPostToFavourites = async (req: Request, res: Response) => {
+export const addPostToFavorites = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { userId } = req.body;
   const user = await users.getUser(userId);

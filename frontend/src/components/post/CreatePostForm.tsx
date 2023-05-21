@@ -20,8 +20,7 @@ import {
   Spinner,
 } from "../utils";
 
-const {  useUploadThing } =
-  generateReactHelpers<BookUploadRouter>();
+const { useUploadThing } = generateReactHelpers<BookUploadRouter>();
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -75,6 +74,7 @@ const CreatePostForm = () => {
         return;
       }
       // Fetch Backend
+      console.log(await getToken());
 
       const createPost = await axios.post(
         `http://localhost:3001/posts/create`,

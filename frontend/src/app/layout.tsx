@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "@uploadthing/react/styles.css";
 import { Inter } from "next/font/google";
 
+import Modal from "../components/Modal";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,9 +23,10 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Navbar />
-          <main className="flex min-h-screen flex-col items-center justify-start gap-5  px-2 py-3 mt-[70px] md:mt-0">
+          <main className="mt-[70px] flex min-h-screen flex-col items-center justify-start  gap-5 px-2 py-3 md:mt-0">
             {children}
           </main>
+          <Modal />
         </body>
       </html>
     </ClerkProvider>
