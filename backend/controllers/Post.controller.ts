@@ -9,8 +9,22 @@ import { CreatePostType } from "../validation/post.validate";
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find();
+    const postsWithUser = Promise.all(
+      posts.map(async (post) => {
+        const user = await users.getUser(post.createdBy);
+        return {
+          post: post,
+          userInfo: {
+            firstName: user.lastName,
+            lastName: user.lastName,
+            email: user.emailAddresses,
+            profileImageUrl: user.profileImageUrl,
+          },
+        };
+      })
+    );
     console.log(posts);
-    res.status(200).json(posts);
+    res.status(200).json(postsWithUser);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

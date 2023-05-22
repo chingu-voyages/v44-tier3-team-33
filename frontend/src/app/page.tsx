@@ -1,5 +1,5 @@
 import PostGrid from "@/components/post/PostGrid";
-import { getPosts } from "@/utils/utils";
+import { getPosts } from "@/utils/fetchData";
 
 export default async function Home() {
   const posts = await getPosts();
