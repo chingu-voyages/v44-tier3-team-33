@@ -102,7 +102,9 @@ export const getSoldPostsByUserId = async (req: Request, res: Response) => {
 export const getPostsByGenre = async (req: Request, res: Response) => {
   // this might change to req.body
   const id = req.params.id;
+  console.log(id);
   try {
+    //get genres from array of ids
     const posts = await Post.find({ genres: id, status: "available" });
     res.status(200).json(posts);
   } catch (error: any) {
@@ -146,7 +148,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
 
   // find genre by id
   const postGenres = await Promise.all(
-    post.genre.map(async (genre) => {
+    post.genre.map(async (genre: any) => {
       const genreNew = await Genre.findOne({ genreName: genre });
       if (genreNew) return genreNew._id;
       const createdGenre = await Genre.create({ genreName: genre });
