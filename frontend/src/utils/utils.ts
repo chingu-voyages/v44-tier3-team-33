@@ -20,11 +20,12 @@ export type PostType = {
   }
 }
 
-const url= "https://v44-tier3-team-33-u43g-heypbzh2c-eslemouederni.vercel.app/"
+const url= "https://v44-tier3-team-33-u43g-heypbzh2c-eslemouederni.vercel.app"
+
 
 export async function getPosts(){
   try {
-    const response = await fetch(`${url}/posts`)
+    const response = await fetch(`${url}/posts/`)
     const data = await response.json()
     return data
 
@@ -36,6 +37,16 @@ export async function getPosts(){
 export async function getGenres(){
   try {
     const response = await fetch(`${url}/genres`)
+    const data = await response.json()
+    return data
+
+  } catch (error: any){
+    return error.message
+  }
+}
+export async function getPostsByGenre(id: string){
+  try {
+    const response = await fetch(`${url}/posts/genre/${id}`)
     const data = await response.json()
     return data
 
