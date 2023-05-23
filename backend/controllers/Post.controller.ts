@@ -1,8 +1,9 @@
 import { Post } from "../models/Post.model";
-import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
-import clerkClient, { Clerk, users, WithAuthProp } from "@clerk/clerk-sdk-node";
-import mongoose from "mongoose";
+import { Cart } from "../models/Cart.models";
+import { Request, Response } from "express";
+import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
+import mongoose, { Types } from "mongoose";
 import { CreatePostType } from "../validation/post.validate";
 
 //get all posts
@@ -162,7 +163,9 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
       genres: postGenres,
       ...post,
     });
+
     console.log(newPost);
+
     //if user has no public metadata, create it
     if (!user.publicMetadata.posts) {
       console.log("no public metadata");
@@ -171,7 +174,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
           posts: [newPost._id.toString()],
         },
       });
-      console.log("done");
+
       res.status(200).json(newPost);
     } else {
       // if user has public metadata, add post to it
@@ -185,6 +188,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
           posts: posts,
         },
       });
+
       console.log(user.publicMetadata.posts);
     }
     res.status(201).json(newPost);
@@ -246,6 +250,7 @@ export const addPostToFavourites = async (req: Request, res: Response) => {
     // check if post exists
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No post with id: ${id}`);
+
     // check if favourites private metadata exists
     if (!user.privateMetadata.favourites) {
       await users.updateUser(userId, {
@@ -253,6 +258,7 @@ export const addPostToFavourites = async (req: Request, res: Response) => {
           favourites: [id.toString()],
         },
       });
+
       return res.status(200).json({ message: "Post added to favourites" });
     } else {
       const favourites = user.privateMetadata.favourites as string[];
@@ -262,7 +268,8 @@ export const addPostToFavourites = async (req: Request, res: Response) => {
           favourites: favourites,
         },
       });
-      res.status(200).json({ message: "Post added to favourites" });
+
+      return res.status(200).json({ message: "Post added to favourites" });
     }
   } catch (error: any) {
     res.status(404).json({ message: error.message });
@@ -293,7 +300,7 @@ export const deletePost = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json({ message: "Post deleted successfully" });
+    return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
