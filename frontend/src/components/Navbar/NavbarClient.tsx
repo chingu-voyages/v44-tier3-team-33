@@ -1,43 +1,110 @@
-"use client"
-import React, { useState } from 'react'
-import Link from "next/link"
-import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
+"use client";
 
-import { RxHamburgerMenu, RxAvatar } from "react-icons/rx"
-import { BsCart3 } from "react-icons/bs"
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
+import Link from "next/link";
+import React, { useState } from "react";
+import { BsCart3 } from "react-icons/bs";
+import { RxHamburgerMenu } from "react-icons/rx";
 
+function NavbarClient() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const { userId } = useAuth();
 
-function NavbarClient({ userId}: {userId: string | null}) {
-  const [isOpen, setIsOpen] = useState(false)
-  
-  function toggleNav(){
-    setIsOpen(prevOpen => !prevOpen)
+  function toggleNav() {
+    setIsOpen((prevOpen) => !prevOpen);
   }
-  
-  return (
-    <>
 
-      <nav className={`flex  gap-4 ${isOpen ? "flex-col fixed left-0 top-[60px] xs:z-20 bg-white xs:shadow-lg p-4 w-full" : "hidden md:inline-flex md:w-[65%] justify-end items-center"}`}>
-        {/* <div> */}
-          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60  md:pr-2" href="">Discover</Link>
-          <Link className="xs:ml-4 hover:opacity-60 focus:opacity:60 md:ml-0 md:pr-2" href="">Category</Link>
-        {/* </div> */}
-        
-        {userId ?
-          <div className='flex flex-col md:flex-row gap-4 md:items-center'>
-            <Link className="xs:ml-4 md:ml-0 hover:opacity-60 focus:opacity:60" href="">Saved</Link>
-            <Link href=""><RxAvatar className="text-4xl xs:ml-4" /></Link>
-            <Link href=""><BsCart3 className="text-3xl xs:ml-4"/></Link>
-            <button className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left md:pr-4"><UserButton /></button>
-          </div> : 
-            <button className="xs:ml-4 hover:opacity-60 focus:opacity:60 text-left  md:pr-4"><SignInButton  /></button>          
-        }
-      </nav> 
-      <button onClick={toggleNav} className='md:hidden'>
-        <RxHamburgerMenu />
-      </button>        
-    </>
-  )
+  return (
+    <div className="flex w-full flex-col items-center justify-center">
+      <div className="flex w-full  items-center justify-between px-8 py-4 ">
+        <div className="md:hidden">
+          <NavLink href="">
+            <span className=" font-bold">Logo</span>
+          </NavLink>
+        </div>
+        <div
+          className={`flex  gap-4 ${
+            isOpen
+              ? "fixed left-0 top-[60px] z-50  h-screen w-full flex-col  bg-black/70 text-lg backdrop-blur-sm xs:shadow-lg"
+              : "hidden items-center justify-end md:flex md:w-full "
+          }`}
+          onClick={() => {
+            setIsOpen(false);
+          }}
+        >
+          <div
+            className=" flex w-full flex-col items-center justify-center gap-5 bg-white p-4 md:flex-row md:justify-between"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
+              <NavLink href="" className=" hidden md:flex">
+                <span className=" font-bold">Logo</span>
+              </NavLink>
+              <NavLink href="/">Discover</NavLink>
+              <NavLink href="">Category</NavLink>
+              {userId ? <NavLink href="">Saved</NavLink> : ""}
+            </div>
+            <input
+              type="search"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={search}
+              placeholder="Search for a book"
+              className=" hidden  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:flex md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
+            />
+            {userId ? (
+              <div className="flex  w-full justify-between gap-5 px-5  md:w-fit md:items-center md:justify-center">
+                <NavLink href="">
+                  <BsCart3 className="text-3xl " size={30} />
+                </NavLink>
+                <button className="focus:opacity:60 text-left hover:opacity-60  md:pr-4">
+                  <UserButton />
+                </button>
+              </div>
+            ) : (
+              <button className="focus:opacity:60 text-left hover:opacity-60 xs:ml-4  md:pr-4">
+                <SignInButton />
+              </button>
+            )}
+          </div>
+        </div>
+        <button onClick={toggleNav} className="md:hidden">
+          <RxHamburgerMenu />
+        </button>
+      </div>
+
+      {isOpen ? <div className=""></div> : ""}
+      <input
+        type="search"
+        onChange={(e) => {
+          setSearch(e.target.value);
+        }}
+        value={search}
+        placeholder="Search for a book"
+        className=" flex  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:hidden md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
+      />
+    </div>
+  );
 }
 
-export default NavbarClient
+export default NavbarClient;
+
+const NavLink: React.FC<{
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ href, children, className }) => {
+  return (
+    <Link
+      href={href}
+      className={`focus:opacity:60 flex items-center  justify-center hover:opacity-60  md:pr-2 ${className}`}
+    >
+      {children}
+    </Link>
+  );
+};

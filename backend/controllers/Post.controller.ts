@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
 import clerkClient, { Clerk, users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose from "mongoose";
+import { CreatePostType } from "../validation/post.validate";
 
 //get all posts
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -101,7 +102,9 @@ export const getSoldPostsByUserId = async (req: Request, res: Response) => {
 export const getPostsByGenre = async (req: Request, res: Response) => {
   // this might change to req.body
   const id = req.params.id;
+  console.log(id);
   try {
+    //get genres from array of ids
     const posts = await Post.find({ genres: id, status: "available" });
     res.status(200).json(posts);
   } catch (error: any) {
@@ -127,31 +130,39 @@ export const getPostsByPrice = async (req: Request, res: Response) => {
 //create post
 
 export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
-  const { createdBy, image, author, title, genres, isbn, condition, price } =
-    req.body;
+  const {
+    body: { post },
+  } = req as CreatePostType;
+
+  console.log(post);
+
+  if (!req.auth.userId || !req.auth) {
+    return res.status(409).json({ message: "this user is not authed" });
+  }
+
+  const user = await users.getUser(req.auth.userId);
+
+  if (!user.id) {
+    return res.status(409).json({ message: "this user is not authed" });
+  }
+
   // find genre by id
-  const genre = await Genre.findById(genres);
-  // get clerk current user
-  const user = await users.getUser(createdBy);
+  const postGenres = await Promise.all(
+    post.genre.map(async (genre: any) => {
+      const genreNew = await Genre.findOne({ genreName: genre });
+      if (genreNew) return genreNew._id;
+      const createdGenre = await Genre.create({ genreName: genre });
+      return createdGenre._id;
+    })
+  );
+
   try {
-    const newPost = new Post({
-      createdBy,
-      image,
-      author,
-      title,
-      genres,
-      isbn,
-      condition,
-      price,
+    const newPost = await Post.create({
+      createdBy: user.id,
+      genres: postGenres,
+      ...post,
     });
-
-    // add post to genre
-    if (genre) {
-      genre.posts.push(newPost._id);
-      await genre.save();
-    }
-    await newPost.save();
-
+    console.log(newPost);
     //if user has no public metadata, create it
     if (!user.publicMetadata.posts) {
       console.log("no public metadata");
@@ -161,7 +172,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
         },
       });
       console.log("done");
-      res.status(201).json(newPost);
+      res.status(200).json(newPost);
     } else {
       // if user has public metadata, add post to it
       // define public metadata posts
@@ -175,10 +186,10 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
         },
       });
       console.log(user.publicMetadata.posts);
-      res.status(201).json(newPost);
     }
-  } catch (error: any) {
-    res.status(409).json({ message: error.message });
+    res.status(201).json(newPost);
+  } catch (error) {
+    res.status(409).json({ message: error });
   }
 };
 
