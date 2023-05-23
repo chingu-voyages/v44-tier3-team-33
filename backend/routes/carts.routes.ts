@@ -10,7 +10,7 @@ import {
   getCartTotalPrice,
 } from "../controllers/Cart.controller";
 
-cartRouter.get("/", getCart);
+cartRouter.get("/:userId", getCart);
 cartRouter.post("/:id", addPostToCart);
 cartRouter.delete("/:id", removePostFromCart);
 cartRouter.delete("/", clearCart);
