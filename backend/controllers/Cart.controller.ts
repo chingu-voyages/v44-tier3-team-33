@@ -6,9 +6,9 @@ import { Post } from "../models/Post.model";
 
 // Get all carts
 export const getCart = async (req: Request, res: Response) => {
-  const user = await users.getUser(req.params.userId);
+  const userId = req.params.userId;
   try {
-    const carts = await Cart.find({ userId: user.id }).populate("posts");
+    const carts = await Cart.find({ userId: userId }).populate("posts");
     res.status(200).json(carts);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
