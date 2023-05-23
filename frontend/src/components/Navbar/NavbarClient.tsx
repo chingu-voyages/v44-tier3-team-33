@@ -59,7 +59,7 @@ function NavbarClient() {
             />
             {userId ? (
               <div className="flex  w-full justify-between gap-5 px-5  md:w-fit md:items-center md:justify-center">
-                <NavLink href="">
+                <NavLink href="/cart">
                   <BsCart3 className="text-3xl " size={30} />
                 </NavLink>
                 <button className="focus:opacity:60 text-left hover:opacity-60  md:pr-4">
