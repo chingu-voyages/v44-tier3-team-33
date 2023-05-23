@@ -1,25 +1,24 @@
-import { PostType, getGenres, getPosts, getPostsByGenre } from '@/utils/utils'
-import PostGrid from '@/components/Post/PostGrid';
+import { getPosts, getGenres } from '@/utils/utils'
+import PostGrid from '@/components/post/PostGrid';
 import SelectGenre from '@/components/SelectGenre';
-
-export type GenreType = {
-  _id: string;
-  genreName: string;
-}
+import FilterPrice from './FilterPrice';
 
 export default async function Home() {
   
-  const userPosts: Promise<PostType[]> = getPosts()
-  const availableGenres: Promise<GenreType[]> = getGenres()
+  const userPosts = getPosts()
+  const availableGenres = getGenres()
 
   const [posts, genres] = await Promise.all([userPosts, availableGenres])
 
-
-  async function getFilteredPosts(id: string) {
-    const filteredPosts = await getPostsByGenre(id)
-    console.log(filteredPosts)
-
+  if (!posts) {
+    return <div>No posts here</div>;
   }
+
+  // async function getFilteredPosts(id: string) {
+  //   const filteredPosts = await getPostsByGenre(id)
+  //   console.log(filteredPosts)
+
+  // }
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-8 "> 
@@ -28,6 +27,9 @@ export default async function Home() {
       <div className='flex flex-col sm:flex-row gap-4 justify-center items-baseline'>
         <label className='text-center'>Filter by Genre</label>
         <SelectGenre genres={genres} />
+
+        <label>Filter by price</label>
+        <FilterPrice />
       </div>
       <PostGrid posts={posts} /> 
     </main>

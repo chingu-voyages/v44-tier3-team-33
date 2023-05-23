@@ -1,8 +1,9 @@
 import { Post } from "../models/Post.model";
 import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
-import { users } from "@clerk/clerk-sdk-node";
+import clerkClient, { Clerk, users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose from "mongoose";
+import { CreatePostType } from "../validation/post.validate";
 
 //get all posts
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -37,15 +38,36 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
   }
 };
 
-// get posts that are available
+// get posts that are available and populate user
 export const getAvailablePosts = async (req: Request, res: Response) => {
+  var data: any = [];
   try {
+    // const user = await users.getUser("user_2PpeVkhuhvEMNqb5LIrrc0K6RYX");
     const posts = await Post.find({ status: "available" });
-    console.log(posts);
-    res.status(200).json(posts);
+    for (const post of posts) {
+      const user = await users.getUser(post.createdBy);
+      if (post.createdBy === user.id) {
+        const userInfo = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.emailAddresses[0].emailAddress,
+          publicMetadata: user.publicMetadata,
+        };
+        data.push({ post, userInfo });
+      }
+    }
+    res.status(201).json(data);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
+};
+// get posts that are available and populate user
+export const getAvailablePost = async (req: Request, res: Response) => {
+  const user = await users.getUser("user_2PpeVkhuhvEMNqb5LIrrc0K6RYX");
+  console.log(user.id);
+  try {
+  } catch (error) {}
 };
 
 // get posts available by user id
@@ -105,52 +127,73 @@ export const getPostsByPrice = async (req: Request, res: Response) => {
 
 //create post
 
-export const createPost = async (req: Request, res: Response) => {
-  const { createdBy, image, author, title, genres, isbn, condition, price } =
-    req.body;
+export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
+  const {
+    body: { post },
+  } = req as CreatePostType;
+
+  console.log(post);
+
+  if (!req.auth.userId || !req.auth) {
+    return res.status(409).json({ message: "this user is not authed" });
+  }
+
+  const user = await users.getUser(req.auth.userId);
+
+  if (!user.id) {
+    return res.status(409).json({ message: "this user is not authed" });
+  }
+
   // find genre by id
-  const genre = await Genre.findById(genres);
-  // get clerk current user
-  const user = await users.getUser(createdBy);
+  const postGenres = await Promise.all(
+    post.genre.map(async (genre) => {
+      const genreNew = await Genre.findOne({ genreName: genre });
+      if (genreNew) return genreNew._id;
+      const createdGenre = await Genre.create({ genreName: genre });
+      return createdGenre._id;
+    })
+  );
+
   try {
-    const newPost = new Post({
-      createdBy,
-      image,
-      author,
-      title,
-      genres,
-      isbn,
-      condition,
-      price,
+    const newPost = await Post.create({
+      createdBy: user.id,
+      genres: postGenres,
+      ...post,
     });
-
-    // add post to genre
-    if (genre) {
-      genre.posts.push(newPost._id);
-      await genre.save();
+    console.log(newPost);
+    //if user has no public metadata, create it
+    if (!user.publicMetadata.posts) {
+      console.log("no public metadata");
+      await users.updateUser(user.id, {
+        publicMetadata: {
+          posts: [newPost._id.toString()],
+        },
+      });
+      console.log("done");
+      res.status(200).json(newPost);
+    } else {
+      // if user has public metadata, add post to it
+      // define public metadata posts
+      const posts = user.publicMetadata.posts as string[];
+      // add post to user metadata
+      posts.push(newPost._id.toString());
+      // update user metadata
+      await users.updateUser(user.id, {
+        publicMetadata: {
+          posts: posts,
+        },
+      });
+      console.log(user.publicMetadata.posts);
     }
-    await newPost.save();
-
-    // define public metadata posts
-    const posts = user.publicMetadata.posts as string[];
-    // add post to user metadata
-    posts.push(newPost._id.toString());
-    // update user metadata
-    await users.updateUser(user.id, {
-      publicMetadata: {
-        posts: posts,
-      },
-    });
-    console.log(user.publicMetadata.posts);
     res.status(201).json(newPost);
-  } catch (error: any) {
-    res.status(409).json({ message: error.message });
+  } catch (error) {
+    res.status(409).json({ message: error });
   }
 };
 
 // update post general info
 
-export const updatePost = async (req: Request, res: Response) => {
+export const updatePost = async (req: WithAuthProp<Request>, res: Response) => {
   const id = req.params.id;
   const { image, author, title, genres, isbn, condition, price } = req.body;
   try {
@@ -196,18 +239,29 @@ export const updatePostStatus = async (req: Request, res: Response) => {
 export const addPostToFavourites = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { userId } = req.body;
+  const user = await users.getUser(userId);
   try {
+    // check if post exists
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No post with id: ${id}`);
-    const user = await users.getUser(userId);
-    const favourites = user.privateMetadata.favourites as string[];
-    favourites.push(id.toString());
-    await users.updateUser(userId, {
-      privateMetadata: {
-        favourites: favourites,
-      },
-    });
-    res.status(200).json({ message: "Post added to favourites" });
+    // check if favourites private metadata exists
+    if (!user.privateMetadata.favourites) {
+      await users.updateUser(userId, {
+        privateMetadata: {
+          favourites: [id.toString()],
+        },
+      });
+      return res.status(200).json({ message: "Post added to favourites" });
+    } else {
+      const favourites = user.privateMetadata.favourites as string[];
+      favourites.push(id.toString());
+      await users.updateUser(userId, {
+        privateMetadata: {
+          favourites: favourites,
+        },
+      });
+      res.status(200).json({ message: "Post added to favourites" });
+    }
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

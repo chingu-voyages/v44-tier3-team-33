@@ -1,15 +1,16 @@
 import React from 'react'
 import Image from 'next/image'
-import { AiOutlineHeart, AiFillHeart, AiOutlineShoppingCart } from "react-icons/ai"
-import { PostCardType } from './PostGrid'
+import { AiOutlineHeart, AiOutlineShoppingCart } from "react-icons/ai"
+import { PostType } from '@/types/post.types'
+import { UserType } from '@/types/user.types'
 
-function Post({ postItem }: {postItem: PostCardType}) {
+function Post({ postItem }: {postItem: {post:PostType, userInfo: UserType}}) {
   const { userInfo, post } = postItem
-  const { image, title, price } = post 
+  const {title, imgs , price} = post
  
   return (
     <div className='w-[250px] md:w-[300px] border-2 border-gray-200 rounded-xl flex flex-col'>
-      <Image src={image} alt={title} width={200} height={400} className='w-full rounded-t-xl' />
+      <Image src={imgs?.[0]} alt={title} width={200} height={400} className='w-full rounded-t-xl h-[400px]' />
       <div className='p-4 flex-grow flex flex-col justify-between'>
         <div className='flex justify-between gap-8  flex-grow'>
           <h3 className='font-bold text-lg md:text-xl mb-2 '>{title}</h3>

@@ -1,5 +1,5 @@
 "use client"
-import { GenreType } from '@/app/page'
+import { GenreType } from '@/types/genre.type'
 import { getPostsByGenre } from '@/utils/utils'
 import React, { useState } from 'react'
 
@@ -10,8 +10,7 @@ function SelectGenre({ genres }: { genres: GenreType[]}) {
     setGenreId(event.target.value)
     console.log(genreId)
     const filteredPosts = await getPostsByGenre(genreId)
-    console.log(filteredPosts)
-    
+    console.log(filteredPosts)    
   }
 
   return (
