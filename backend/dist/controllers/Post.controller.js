@@ -107,7 +107,9 @@ exports.getSoldPostsByUserId = getSoldPostsByUserId;
 const getPostsByGenre = async (req, res) => {
     // this might change to req.body
     const id = req.params.id;
+    console.log(id);
     try {
+        //get genres from array of ids
         const posts = await Post_model_1.Post.find({ genres: id, status: "available" });
         res.status(200).json(posts);
     }
@@ -133,28 +135,30 @@ const getPostsByPrice = async (req, res) => {
 exports.getPostsByPrice = getPostsByPrice;
 //create post
 const createPost = async (req, res) => {
-    const { createdBy, image, author, title, genres, isbn, condition, price } = req.body;
+    const { body: { post }, } = req;
+    console.log(post);
+    if (!req.auth.userId || !req.auth) {
+        return res.status(409).json({ message: "this user is not authed" });
+    }
+    const user = await clerk_sdk_node_1.users.getUser(req.auth.userId);
+    if (!user.id) {
+        return res.status(409).json({ message: "this user is not authed" });
+    }
     // find genre by id
-    const genre = await Genre_model_1.Genre.findById(genres);
-    // get clerk current user
-    const user = await clerk_sdk_node_1.users.getUser(createdBy);
+    const postGenres = await Promise.all(post.genre.map(async (genre) => {
+        const genreNew = await Genre_model_1.Genre.findOne({ genreName: genre });
+        if (genreNew)
+            return genreNew._id;
+        const createdGenre = await Genre_model_1.Genre.create({ genreName: genre });
+        return createdGenre._id;
+    }));
     try {
-        const newPost = new Post_model_1.Post({
-            createdBy,
-            image,
-            author,
-            title,
-            genres,
-            isbn,
-            condition,
-            price,
+        const newPost = await Post_model_1.Post.create({
+            createdBy: user.id,
+            genres: postGenres,
+            ...post,
         });
-        // add post to genre
-        if (genre) {
-            genre.posts.push(newPost._id);
-            await genre.save();
-        }
-        await newPost.save();
+        console.log(newPost);
         //if user has no public metadata, create it
         if (!user.publicMetadata.posts) {
             console.log("no public metadata");
@@ -163,8 +167,7 @@ const createPost = async (req, res) => {
                     posts: [newPost._id.toString()],
                 },
             });
-            console.log("done");
-            res.status(201).json(newPost);
+            res.status(200).json(newPost);
         }
         else {
             // if user has public metadata, add post to it
@@ -179,11 +182,11 @@ const createPost = async (req, res) => {
                 },
             });
             console.log(user.publicMetadata.posts);
-            res.status(201).json(newPost);
         }
+        res.status(201).json(newPost);
     }
     catch (error) {
-        res.status(409).json({ message: error.message });
+        res.status(409).json({ message: error });
     }
 };
 exports.createPost = createPost;
@@ -249,7 +252,7 @@ const addPostToFavourites = async (req, res) => {
                     favourites: favourites,
                 },
             });
-            res.status(200).json({ message: "Post added to favourites" });
+            return res.status(200).json({ message: "Post added to favourites" });
         }
     }
     catch (error) {
@@ -277,7 +280,7 @@ const deletePost = async (req, res) => {
                 posts: posts,
             },
         });
-        res.status(200).json({ message: "Post deleted successfully" });
+        return res.status(200).json({ message: "Post deleted successfully" });
     }
     catch (error) {
         res.status(404).json({ message: error.message });
