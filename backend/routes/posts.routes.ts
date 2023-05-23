@@ -26,7 +26,7 @@ postRouter.get("/", getAvailablePosts); // this is what should be used in the di
 postRouter.get("/available/:id", getAvailablePostsByUserId);
 postRouter.get("/sold/:id", getSoldPostsByUserId);
 postRouter.get("/price/:price", getPostsByPrice);
-postRouter.get("/genre/:genre", getPostsByGenre);
+postRouter.get("/genre/:id", getPostsByGenre);
 postRouter.get("/all", getAllPosts);
 postRouter.post(
   "/create",
