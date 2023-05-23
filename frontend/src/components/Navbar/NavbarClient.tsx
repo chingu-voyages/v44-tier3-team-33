@@ -46,7 +46,14 @@ function NavbarClient() {
               </NavLink>
               <NavLink href="/">Discover</NavLink>
               <NavLink href="">Category</NavLink>
-              {userId ? <NavLink href="">Saved</NavLink> : ""}
+              {userId ? (
+                <>
+                  <NavLink href="">Saved</NavLink>
+                  <NavLink href="/post">Sell Now</NavLink>
+                </>
+              ) : (
+                ""
+              )}
             </div>
             <input
               type="search"

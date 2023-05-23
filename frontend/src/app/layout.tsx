@@ -23,7 +23,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Navbar />
-          <main className="mt-[70px] flex min-h-screen flex-col items-center justify-start  gap-5 px-2 py-3 md:mt-0">
+          <main className="mt-[70px] flex min-h-screen flex-col items-center justify-start  gap-5 px-2 py-3 text-black md:mt-0">
             {children}
           </main>
           <Modal />
