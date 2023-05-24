@@ -4,12 +4,23 @@ import { users } from "@clerk/clerk-sdk-node";
 import { Request, Response } from "express";
 import { Post } from "../models/Post.model";
 
-// Get user's cart
+//Get all carts just for testing
+
+export const getCarts = async (req: Request, res: Response) => {
+  try {
+    const carts = await Cart.find();
+    res.status(200).json(carts);
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+// Get all carts
 export const getCart = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   try {
-    const cart = await Cart.findOne({ userId: userId });
-    res.status(200).json(cart);
+    const carts = await Cart.find({ userId: userId }).populate("posts");
+    res.status(200).json(carts);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
