@@ -3,8 +3,7 @@ import { UserType } from "@/types/user.types";
 import { currentUser } from "@clerk/nextjs";
 import axios from "axios";
 
-const url =
-  "https://v44-tier3-team-33-u43g-heypbzh2c-eslemouederni.vercel.app/";
+const url = "https://bookmart-miv5.onrender.com";
 
 export async function getPosts() {
   try {
@@ -22,8 +21,9 @@ export async function getPosts() {
 }
 
 export async function getCart() {
-  const user = await currentUser();
   try {
+    const user = await currentUser();
+    console.log(`${url}/carts/${user?.id}`);
     const response = await axios.get(`${url}/carts/${user?.id}`);
     if ((response.status !== 200, !response.data)) {
       throw new Error("Failed to fetch data");
