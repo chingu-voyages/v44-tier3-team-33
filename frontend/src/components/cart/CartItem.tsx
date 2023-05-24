@@ -1,14 +1,28 @@
 "use client";
 
 import { PostType } from "@/types/post.types";
-import { clerkClient } from "@clerk/nextjs";
+import { get } from "http";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 
 const CartItem = async ({ item }: { item: PostType }) => {
   const { title, imgs, price, condition, description, isbn, createdBy } = item;
-  // const {firstName, lastName} = await clerkClient.users.getUser(createdBy);
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      const res = await fetch(
+        `http://localhost:3000/posts//availablePost/${item._id}`
+      );
+      const data = await res.json();
+      setUserData(data);
+      console.log(data[0].userInfo.firstName);
+    };
+    getUserData();
+  }, [item._id]);
+
+  const { firstName, lastName } = userData[0]?.userInfo;
 
   return (
     <div className="flex w-full items-center justify-between border-b p-4 text-black">
@@ -22,9 +36,9 @@ const CartItem = async ({ item }: { item: PostType }) => {
         <div>
           <h4>{description}</h4>
         </div>
-        {/* <div>
-          <h4>Created by : {firstName} {lastName}</h4>
-        </div> */}
+        <div>
+          <h4>Created by :{firstName}</h4>
+        </div>
         <div>
           <h4>Condition : {condition}</h4>
         </div>

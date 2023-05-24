@@ -1,10 +1,11 @@
 import CartItem from "@/components/cart/CartItem";
-import { getCart } from "@/utils/utils";
+import { getCart } from "@/utils/fetchData";
 import { CgShoppingCart } from "react-icons/cg";
 
 const page = async () => {
   const cart = await getCart();
-  if (cart.length === 0) {
+  console.log(cart);
+  if (!cart) {
     return (
       <div className="mt-6 flex w-10/12 flex-col text-black">
         <div className=" flex w-full flex-col items-center gap-1">

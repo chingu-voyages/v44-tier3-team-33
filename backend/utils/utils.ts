@@ -21,3 +21,22 @@ export const getPostsWithUser: (props: { posts: PostType[] }) => any = async ({
     })
   );
 };
+
+export const getPostWithUser: (props: { post: PostType }) => any = async ({
+  post,
+}) => {
+  const user = await users.getUser(post.createdBy);
+  return Promise.all([
+    {
+      post: post,
+      userInfo: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.emailAddresses[0].emailAddress,
+        profileImageUrl: user.profileImageUrl,
+        publicMetadata: user.publicMetadata,
+      },
+    },
+  ]);
+};

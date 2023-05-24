@@ -4,6 +4,7 @@ import {
   getPostsByUserId,
   getAvailablePosts,
   getAvailablePostsByUserId,
+  getAvailablePostByUser,
   getSoldPostsByUserId,
   getPostsByPrice,
   getPostsByGenre,
@@ -24,6 +25,7 @@ postRouter.get("/:id", getPostsByUserId);
 postRouter.get("/post/:id", getPostById);
 postRouter.get("/", getAvailablePosts); // this is what should be used in the discover page
 postRouter.get("/available/:id", getAvailablePostsByUserId);
+postRouter.get("/availablePost/:id", getAvailablePostByUser);
 postRouter.get("/sold/:id", getSoldPostsByUserId);
 postRouter.get("/price/:price", getPostsByPrice);
 postRouter.get("/genre/:id", getPostsByGenre);
