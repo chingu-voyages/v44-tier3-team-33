@@ -15,7 +15,6 @@ export const CartSchema = new Schema({
   ],
   totalPrice: {
     type: Number,
-    required: false,
     default: 0,
   },
 });
