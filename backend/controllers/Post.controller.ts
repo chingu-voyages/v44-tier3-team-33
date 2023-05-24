@@ -1,10 +1,9 @@
 import { Post } from "../models/Post.model";
 import { Genre } from "../models/Genre.model";
 
-import { Cart } from "../models/Cart.models";
 import { Request, Response } from "express";
 import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 import { CreatePostType } from "../validation/post.validate";
 import { getPostsWithUser, getPostWithUser } from "../utils/utils";

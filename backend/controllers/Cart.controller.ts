@@ -14,7 +14,7 @@ type PopulatedParent = {
 export const getCarts = async (req: Request, res: Response) => {
   try {
     const carts = await Cart.find();
-    res.status(200).json(carts);
+    res.status(200).json({ data: carts });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -36,10 +36,12 @@ export const getCart = async (req: WithAuthProp<Request>, res: Response) => {
   if (!cart) {
     return res.status(404).json({ message: "can't find this cart" });
   }
-  const postsWithUser = getPostsWithUser({ posts: cart.posts as PostType[] });
+  const postsWithUser = await getPostsWithUser({
+    posts: cart.posts as PostType[],
+  });
 
   try {
-    res.status(200).json(cart);
+    res.status(200).json({ data: {...cart, posts:postsWithUser} });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -93,7 +95,7 @@ export const addOrRemovePostCart = async (
 
     await cart.save();
 
-    return res.status(200).json({ message: "Post added to cart" });
+    return res.status(200).json({ message: "Post removed from cart" });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
