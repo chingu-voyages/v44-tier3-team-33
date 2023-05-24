@@ -3,7 +3,7 @@ export type PostType = {
   createdBy: string;
   createdAt: Date;
   author: string;
-  tile: string;
+  title: string;
   description: string;
   imgs: string[];
   condition: BookConditionType;
@@ -46,3 +46,6 @@ export const BookGenreEnum = [
   "Travel",
 ] as const;
 export type BookGenreType = (typeof BookGenreEnum)[number];
+
+export const BookStatusEnum = ["available", "sold"] as const;
+export type BookStatusType = (typeof BookStatusEnum)[number];

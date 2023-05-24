@@ -12,7 +12,7 @@ import {
   deletePost,
   updatePost,
   updatePostStatus,
-  addPostToFavourites,
+  addPostToFavorites,
 } from "../controllers/Post.controller";
 import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
 
@@ -37,10 +37,6 @@ postRouter.post(
 postRouter.put("/update/:id", ClerkExpressWithAuth(), updatePost);
 postRouter.put("/updateStatus/:id", ClerkExpressWithAuth(), updatePostStatus);
 postRouter.delete("/delete/:id", ClerkExpressWithAuth(), deletePost);
-postRouter.put(
-  "/addFavourite/:id",
-  ClerkExpressWithAuth(),
-  addPostToFavourites
-);
+postRouter.put("/addFavorites/:id", ClerkExpressWithAuth(), addPostToFavorites);
 
 export { postRouter };

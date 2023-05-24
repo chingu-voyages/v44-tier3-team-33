@@ -1,17 +1,22 @@
 import { Post } from "../models/Post.model";
 import { Genre } from "../models/Genre.model";
+
 import { Cart } from "../models/Cart.models";
 import { Request, Response } from "express";
 import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose, { Types } from "mongoose";
+
 import { CreatePostType } from "../validation/post.validate";
+import { getPostsWithUser } from "../utils/utils";
+import { PostType } from "../types/post.types";
 
 //get all posts
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find();
+    const posts = (await Post.find()) as PostType[];
+    const postsWithUser = await getPostsWithUser({ posts: posts });
     console.log(posts);
-    res.status(200).json(posts);
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -22,7 +27,24 @@ export const getPostById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
     const post = await Post.findById(id);
-    res.status(200).json(post);
+
+    if (!post?.createdBy || !post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const user = await users.getUser(post.createdBy);
+    const postWithUser = {
+      post,
+      userInfo: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.emailAddresses[0].emailAddress,
+        profileImageUrl: user.profileImageUrl,
+        publicMetadata: user.publicMetadata,
+      },
+    };
+    res.status(200).json({ data: postWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -32,8 +54,14 @@ export const getPostById = async (req: Request, res: Response) => {
 export const getPostsByUserId = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id });
-    res.status(200).json(posts);
+    const posts = (await Post.find({ createdBy: id })) as PostType[];
+
+    if (!posts) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -41,38 +69,19 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
 
 // get posts that are available and populate user
 export const getAvailablePosts = async (req: Request, res: Response) => {
-  var data: any = [];
   try {
-    // const user = await users.getUser("user_2PpeVkhuhvEMNqb5LIrrc0K6RYX");
-    const posts = await Post.find({ status: "available" });
-    for (const post of posts) {
-      const user = await users.getUser(post.createdBy);
-      if (post.createdBy === user.id) {
-        const userInfo = {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.emailAddresses[0].emailAddress,
-          publicMetadata: user.publicMetadata,
-        };
-        data.push({ post, userInfo });
-      }
-    }
-    res.status(201).json(data);
+    const posts = (await Post.find({ status: "available" })) as PostType[];
+
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+    console.log(postsWithUser);
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
 };
-// get posts that are available and populate user
-export const getAvailablePost = async (req: Request, res: Response) => {
-  const user = await users.getUser("user_2PpeVkhuhvEMNqb5LIrrc0K6RYX");
-  console.log(user.id);
-  try {
-  } catch (error) {}
-};
 
 // get posts available by user id
-
 export const getAvailablePostsByUserId = async (
   req: Request,
   res: Response
@@ -80,7 +89,22 @@ export const getAvailablePostsByUserId = async (
   const id = req.params.id;
   try {
     const posts = await Post.find({ createdBy: id, status: "available" });
-    res.status(200).json(posts);
+    const postsWithUser = Promise.all(
+      posts.map(async (post) => {
+        const user = await users.getUser(post.createdBy);
+        return {
+          post: post,
+          userInfo: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.emailAddresses[0].emailAddress,
+            profileImageUrl: user.profileImageUrl,
+            publicMetadata: user.publicMetadata,
+          },
+        };
+      })
+    );
+    res.status(200).json(postsWithUser);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -91,8 +115,14 @@ export const getAvailablePostsByUserId = async (
 export const getSoldPostsByUserId = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id, status: "sold" });
-    res.status(200).json(posts);
+    const posts = (await Post.find({
+      createdBy: id,
+      status: "sold",
+    })) as PostType[];
+
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -105,9 +135,15 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
   const id = req.params.id;
   console.log(id);
   try {
-    //get genres from array of ids
-    const posts = await Post.find({ genres: id, status: "available" });
-    res.status(200).json(posts);
+
+    const posts = (await Post.find({
+      genres: id,
+      status: "available",
+    })) as PostType[];
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -118,11 +154,13 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
 export const getPostsByPrice = async (req: Request, res: Response) => {
   const price = req.params.price;
   try {
-    const posts = await Post.find({
+    const posts = (await Post.find({
       price: { $lte: price },
       status: "available",
-    });
-    res.status(200).json(posts);
+    })) as PostType[];
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -135,16 +173,16 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
     body: { post },
   } = req as CreatePostType;
 
-  console.log(post);
+  console.log(req.auth.userId);
 
   if (!req.auth.userId || !req.auth) {
-    return res.status(409).json({ message: "this user is not authed" });
+    return res.status(401).json({ message: "this user is not authed" });
   }
 
   const user = await users.getUser(req.auth.userId);
 
   if (!user.id) {
-    return res.status(409).json({ message: "this user is not authed" });
+    return res.status(401).json({ message: "this user is not authed" });
   }
 
   // find genre by id
@@ -161,6 +199,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
     const newPost = await Post.create({
       createdBy: user.id,
       genres: postGenres,
+      imgs: post.imagesURLs,
       ...post,
     });
 
@@ -191,9 +230,9 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
 
       console.log(user.publicMetadata.posts);
     }
-    res.status(201).json(newPost);
+    return res.status(200).json(newPost);
   } catch (error) {
-    res.status(409).json({ message: error });
+    return res.status(409).json({ message: error });
   }
 };
 
@@ -240,9 +279,9 @@ export const updatePostStatus = async (req: Request, res: Response) => {
   }
 };
 
-// add post to user's favourites
+// add post to user's Favorites
 
-export const addPostToFavourites = async (req: Request, res: Response) => {
+export const addPostToFavorites = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { userId } = req.body;
   const user = await users.getUser(userId);
