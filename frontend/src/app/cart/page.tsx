@@ -22,6 +22,7 @@ const page = async () => {
         </div>
         <div className=" flex w-full flex-col items-center gap-1">
           {cart[0].posts.map((item: any) => (
+            /* @ts-expect-error Server Component */
             <CartItem key={item._id} item={item} />
           ))}
         </div>
