@@ -30,18 +30,28 @@ export const getCart = async (req: WithAuthProp<Request>, res: Response) => {
     return res.status(404).json({ message: "can't find this user" });
   }
   const userId = user.id;
+  console.log(userId);
   const cart = await Cart.findOne({ userId: userId }).populate<
     Pick<PopulatedParent, "posts">
   >("posts");
+
   if (!cart) {
     return res.status(404).json({ message: "can't find this cart" });
   }
-  const postsWithUser = await getPostsWithUser({
-    posts: cart.posts as PostType[],
-  });
 
   try {
-    res.status(200).json({ data: {...cart, posts:postsWithUser} });
+    const postsWithUser = await getPostsWithUser({
+      posts: cart.posts as PostType[],
+    });
+
+    res.status(200).json({
+      data: {
+        _id: cart._id,
+        userId: cart.userId,
+        posts: postsWithUser,
+        totalPrice: cart.totalPrice,
+      },
+    });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

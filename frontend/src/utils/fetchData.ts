@@ -1,6 +1,6 @@
+import { CartType } from "@/types/cart.types";
 import { PostType } from "@/types/post.types";
 import { UserType } from "@/types/user.types";
-import { currentUser } from "@clerk/nextjs";
 import axios from "axios";
 
 const url = "https://bookmart-miv5.onrender.com/";
@@ -9,8 +9,8 @@ export async function getPosts() {
   try {
     const response = await axios.get<{
       data: { post: PostType; userInfo: UserType }[];
-    }>(`http://localhost:3000/posts`);
-    console.log(response.data);
+    }>(`http://localhost:3001/posts`);
+
     if ((response.status !== 200, !response.data.data)) {
       // This will activate the closest `error.js` Error Boundary
       throw new Error("Failed to fetch data");
@@ -21,17 +21,17 @@ export async function getPosts() {
   }
 }
 
-export async function getCart() {
+export const getCart = async (props: { auth: string }) => {
   try {
-    const user = await currentUser();
-    const response = await axios.get(
-      `http://localhost:3000/carts/user_2PryvC1iTckkxAqugm2jXfjOBnh`
-    );
-    if ((response.status !== 200, !response.data)) {
-      throw new Error("Failed to fetch data");
-    }
-    return response.data;
+    const response = await axios.get<{
+      data: CartType;
+    }>(`http://localhost:3001/carts`, {
+      headers: {
+        Authorization: props.auth,
+      },
+    });
+    return response.data.data;
   } catch (error: any) {
     console.log(error);
   }
-}
+};

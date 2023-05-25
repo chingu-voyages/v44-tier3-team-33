@@ -11,9 +11,9 @@ import {
 } from "../controllers/Cart.controller";
 import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
 
-cartRouter.get("/:userId", ClerkExpressWithAuth(), getCart);
+cartRouter.get("/total-price", ClerkExpressWithAuth(), getCartTotalPrice);
+cartRouter.get("/", ClerkExpressWithAuth(), getCart);
 cartRouter.post("/:id", ClerkExpressWithAuth(), addOrRemovePostCart);
 cartRouter.delete("/", ClerkExpressWithAuth(), clearCart);
-cartRouter.get("/total-price", ClerkExpressWithAuth(), getCartTotalPrice);
 
 export { cartRouter };

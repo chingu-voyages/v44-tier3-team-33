@@ -1,8 +1,9 @@
 import { PostType } from "./post.types";
+import { UserType } from "./user.types";
 
 export type CartType = {
   _id: string;
   userId: string;
-  posts: PostType[];
+  posts: { post: PostType; userInfo: UserType }[];
   totalPrice: number;
 };
