@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import NavbarClient from "./NavbarClient";
 
-const Navbar = async () => {
+const Navbar = () => {
   const { userId } = auth();
 
   return (

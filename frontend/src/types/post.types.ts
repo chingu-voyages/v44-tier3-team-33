@@ -9,8 +9,8 @@ export type PostType = {
   imgs: string[];
   condition: BookConditionType;
   genre: BookGenreType;
-  isbn: string|undefined
-  price: number
+  isbn: string | undefined;
+  price: number;
 };
 
 export const BookConditionEnum = [

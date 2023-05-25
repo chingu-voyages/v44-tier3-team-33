@@ -4,7 +4,8 @@ import { UserType } from '@/types/user.types';
 import { GenreType } from "@/types/genre.type";
 
 
-const url= " https://bookmart-miv5.onrender.com"
+const url= "https://bookmart-miv5.onrender.com"
+const url1= " http://localhost:3001"
 
 export async function getPosts(){
   try {
@@ -56,4 +57,18 @@ export async function getPostsByPrice(price: number){
     return error.message
   }
 }
+export async function getFilteredPosts(filters: { price: number, genreId: string}){
+  try {
+    const response = await axios.post<{post: PostType, userInfo: UserType}[]>(`${url1}/posts/filters`, {filters})
+    if (response.status !== 200, !response.data) {
+      throw new Error('Failed to fetch data')
+    }    
+    return response.data
+
+  } catch (error: any){
+    return error.message
+  }
+}
+
+
 

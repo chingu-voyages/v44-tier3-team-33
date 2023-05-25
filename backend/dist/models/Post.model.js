@@ -5,14 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = exports.PostSchema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+const post_types_1 = require("../types/post.types");
 const Schema = mongoose_1.default.Schema;
 exports.PostSchema = new Schema({
     createdBy: {
         type: String,
         required: true,
     },
-    image: {
-        type: String,
+    imgs: {
+        type: [String],
         required: true,
     },
     author: {
@@ -24,23 +25,22 @@ exports.PostSchema = new Schema({
         required: true,
     },
     genres: {
-        type: Schema.Types.ObjectId,
+        type: [Schema.Types.ObjectId],
         ref: "Genre",
     },
     isbn: {
         type: String,
-        required: true,
     },
     condition: {
         type: String,
-        enum: ["poor", "good", "very good", "like new"],
+        enum: post_types_1.BookConditionEnum,
         required: true,
     },
     price: {
         type: Number,
         required: true,
     },
-    createdDate: {
+    createdAt: {
         type: Date,
         default: Date.now,
     },

@@ -1,12 +1,11 @@
 "use client"
 
 import { GenreType } from '@/types/genre.type'
-import { getPostsByPrice } from '@/utils/utils'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 function Filter({ genres }: { genres: GenreType[]}) {
-  const [price, setPrice] = useState(1000)
+  const [price, setPrice] = useState(100)
   const [genreId, setGenreId] = useState("")
   const router = useRouter()
 
@@ -16,9 +15,9 @@ function Filter({ genres }: { genres: GenreType[]}) {
   function handleGenreChange(event: React.ChangeEvent<HTMLSelectElement>){
     setGenreId(event.target.value)
   }
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>){
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>){
     event.preventDefault()
-    router.push("/filters")
+    router.push(`/filter?price=${price}&genreId=${genreId}`)
   }
 
   return (
@@ -29,7 +28,7 @@ function Filter({ genres }: { genres: GenreType[]}) {
       </select>
       <label className='md:mr-4'>Price</label>
       <input type="range" defaultValue={0} onChange={handlePriceChange} />
-      <button type='submit'>Apply</button>
+      <button className='block md:inline-block px-6 py-2 bg-emerald-500 text-white rounded-lg my-4 md:ml-4' type='submit'>Apply</button>
     </form>
   )
 }

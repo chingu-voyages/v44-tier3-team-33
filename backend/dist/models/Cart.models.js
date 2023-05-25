@@ -3,14 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Genre = exports.GenreSchema = void 0;
+exports.Cart = exports.CartSchema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const post_types_1 = require("../types/post.types");
 const Schema = mongoose_1.default.Schema;
-exports.GenreSchema = new Schema({
-    genreName: {
+exports.CartSchema = new Schema({
+    userId: {
         type: String,
-        enum: post_types_1.BookGenreEnum,
         required: true,
     },
     posts: [
@@ -19,6 +17,11 @@ exports.GenreSchema = new Schema({
             ref: "Post",
         },
     ],
+    totalPrice: {
+        type: Number,
+        required: false,
+        default: 0,
+    },
 });
-exports.Genre = mongoose_1.default.model("Genre", exports.GenreSchema);
-//# sourceMappingURL=Genre.model.js.map
+exports.Cart = mongoose_1.default.model("Cart", exports.CartSchema);
+//# sourceMappingURL=Cart.models.js.map

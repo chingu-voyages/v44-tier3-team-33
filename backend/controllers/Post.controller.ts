@@ -1,15 +1,23 @@
 import { Post } from "../models/Post.model";
-import { Request, Response } from "express";
 import { Genre } from "../models/Genre.model";
-import { users } from "@clerk/clerk-sdk-node";
-import mongoose from "mongoose";
+
+
+import { Cart } from "../models/Cart.models";
+import { Request, Response } from "express";
+import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
+import mongoose, { Types } from "mongoose";
+
+import { CreatePostType } from "../validation/post.validate";
+import { getPostsWithUser } from "../utils/utils";
+import { PostType } from "../types/post.types";
 
 //get all posts
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find();
+    const posts = (await Post.find()) as PostType[];
+    const postsWithUser = await getPostsWithUser({ posts: posts });
     console.log(posts);
-    res.status(200).json(posts);
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -20,7 +28,24 @@ export const getPostById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
     const post = await Post.findById(id);
-    res.status(200).json(post);
+
+    if (!post?.createdBy || !post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const user = await users.getUser(post.createdBy);
+    const postWithUser = {
+      post,
+      userInfo: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.emailAddresses[0].emailAddress,
+        profileImageUrl: user.profileImageUrl,
+        publicMetadata: user.publicMetadata,
+      },
+    };
+    res.status(200).json({ data: postWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -30,8 +55,14 @@ export const getPostById = async (req: Request, res: Response) => {
 export const getPostsByUserId = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id });
-    res.status(200).json(posts);
+    const posts = (await Post.find({ createdBy: id })) as PostType[];
+
+    if (!posts) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -40,16 +71,19 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
 // get posts that are available
 export const getAvailablePosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find({ status: "available" });
-    console.log(posts);
-    res.status(200).json(posts);
+
+    const posts = (await Post.find({ status: "available" })) as PostType[];
+
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+    console.log(postsWithUser);
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
 };
 
 // get posts available by user id
-
 export const getAvailablePostsByUserId = async (
   req: Request,
   res: Response
@@ -57,7 +91,22 @@ export const getAvailablePostsByUserId = async (
   const id = req.params.id;
   try {
     const posts = await Post.find({ createdBy: id, status: "available" });
-    res.status(200).json(posts);
+    const postsWithUser = Promise.all(
+      posts.map(async (post) => {
+        const user = await users.getUser(post.createdBy);
+        return {
+          post: post,
+          userInfo: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.emailAddresses[0].emailAddress,
+            profileImageUrl: user.profileImageUrl,
+            publicMetadata: user.publicMetadata,
+          },
+        };
+      })
+    );
+    res.status(200).json(postsWithUser);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -68,8 +117,14 @@ export const getAvailablePostsByUserId = async (
 export const getSoldPostsByUserId = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id, status: "sold" });
-    res.status(200).json(posts);
+    const posts = (await Post.find({
+      createdBy: id,
+      status: "sold",
+    })) as PostType[];
+
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -80,9 +135,17 @@ export const getSoldPostsByUserId = async (req: Request, res: Response) => {
 export const getPostsByGenre = async (req: Request, res: Response) => {
   // this might change to req.body
   const id = req.params.id;
+  console.log(id);
   try {
-    const posts = await Post.find({ genres: id, status: "available" });
-    res.status(200).json(posts);
+
+    const posts = (await Post.find({
+      genres: id,
+      status: "available",
+    })) as PostType[];
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -93,17 +156,20 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
 export const getPostsByPrice = async (req: Request, res: Response) => {
   const price = req.params.price;
   try {
-    const posts = await Post.find({
+    const posts = (await Post.find({
       price: { $lte: price },
       status: "available",
-    });
-    res.status(200).json(posts);
+    })) as PostType[];
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const getPostsByFilters = async (req: Request, res: Response) => {
-  const filters = req.body
+  const filters = req.body.filters
   console.log(req.body)
   
   try {
@@ -111,8 +177,10 @@ export const getPostsByFilters = async (req: Request, res: Response) => {
       price: { $lte: filters.price },
       genres: filters.genreId ,
       status: "available",
-    })
-    return res.status(200).json(posts);
+    }) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -122,46 +190,71 @@ export const getPostsByFilters = async (req: Request, res: Response) => {
 
 //create post
 
-export const createPost = async (req: Request, res: Response) => {
-  const { createdBy, image, author, title, genres, isbn, condition, price } =
-    req.body;
+export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
+  const {
+    body: { post },
+  } = req as CreatePostType;
+
+  console.log(req.auth.userId);
+
+  if (!req.auth.userId || !req.auth) {
+    return res.status(401).json({ message: "this user is not authed" });
+  }
+
+  const user = await users.getUser(req.auth.userId);
+
+  if (!user.id) {
+    return res.status(401).json({ message: "this user is not authed" });
+  }
+
   // find genre by id
-  const genre = await Genre.findById(genres);
-  // get clerk current user
-  const user = await users.getUser(createdBy);
+  const postGenres = await Promise.all(
+    post.genre.map(async (genre: any) => {
+      const genreNew = await Genre.findOne({ genreName: genre });
+      if (genreNew) return genreNew._id;
+      const createdGenre = await Genre.create({ genreName: genre });
+      return createdGenre._id;
+    })
+  );
+
   try {
-    const newPost = new Post({
-      createdBy,
-      image,
-      author,
-      title,
-      genres,
-      isbn,
-      condition,
-      price,
+    const newPost = await Post.create({
+      createdBy: user.id,
+      genres: postGenres,
+      imgs: post.imagesURLs,
+      ...post,
     });
 
-    // add post to genre
-    if (genre) {
-      genre.posts.push(newPost._id);
-      await genre.save();
+    console.log(newPost);
+
+    //if user has no public metadata, create it
+    if (!user.publicMetadata.posts) {
+      console.log("no public metadata");
+      await users.updateUser(user.id, {
+        publicMetadata: {
+          posts: [newPost._id.toString()],
+        },
+      });
+
+      res.status(200).json(newPost);
+    } else {
+      // if user has public metadata, add post to it
+      // define public metadata posts
+      const posts = user.publicMetadata.posts as string[];
+      // add post to user metadata
+      posts.push(newPost._id.toString());
+      // update user metadata
+      await users.updateUser(user.id, {
+        publicMetadata: {
+          posts: posts,
+        },
+      });
+
+      console.log(user.publicMetadata.posts);
     }
-    await newPost.save();
-
-    // define public metadata posts
-    const posts = user.publicMetadata.posts as string[];
-    // add post to user metadata
-    posts.push(newPost._id.toString());
-    // update user metadata
-    await users.updateUser(user.id, {
-      publicMetadata: {
-        posts: posts,
-      },
-    });
-    console.log(user.publicMetadata.posts);
-    res.status(201).json(newPost);
-  } catch (error: any) {
-    res.status(409).json({ message: error.message });
+    return res.status(200).json(newPost);
+  } catch (error) {
+    return res.status(409).json({ message: error });
   }
 };
 
@@ -208,23 +301,38 @@ export const updatePostStatus = async (req: Request, res: Response) => {
   }
 };
 
-// add post to user's favourites
+// add post to user's Favorites
 
-export const addPostToFavourites = async (req: Request, res: Response) => {
+export const addPostToFavorites = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { userId } = req.body;
   try {
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No post with id: ${id}`);
+
     const user = await users.getUser(userId);
-    const favourites = user.privateMetadata.favourites as string[];
-    favourites.push(id.toString());
-    await users.updateUser(userId, {
-      privateMetadata: {
-        favourites: favourites,
-      },
-    });
-    res.status(200).json({ message: "Post added to favourites" });
+
+
+    // check if favourites private metadata exists
+    if (!user.privateMetadata.favourites) {
+      await users.updateUser(userId, {
+        privateMetadata: {
+          favourites: [id.toString()],
+        },
+      });
+
+      return res.status(200).json({ message: "Post added to favourites" });
+    } else {
+      const favourites = user.privateMetadata.favourites as string[];
+      favourites.push(id.toString());
+      await users.updateUser(userId, {
+        privateMetadata: {
+          favourites: favourites,
+        },
+      });
+
+      return res.status(200).json({ message: "Post added to favourites" });
+    }
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -254,7 +362,7 @@ export const deletePost = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json({ message: "Post deleted successfully" });
+    return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

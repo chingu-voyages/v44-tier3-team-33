@@ -12,7 +12,7 @@ import {
   deletePost,
   updatePost,
   updatePostStatus,
-  addPostToFavourites,
+  addPostToFavorites,
   getPostsByFilters,
 } from "../controllers/Post.controller";
 import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
@@ -21,13 +21,14 @@ import validateReq from "../middleware/validateReq";
 import { createPostSchema } from "../validation/post.validate";
 const postRouter = express.Router();
 
-postRouter.get("/filters", getPostsByFilters);
+postRouter.post("/filters", getPostsByFilters);
 postRouter.get("/user/:id", getPostsByUserId);
 postRouter.get("/post/:id", getPostById);
 postRouter.get("/", getAvailablePosts); // this is what should be used in the discover page
 postRouter.get("/available/:id", getAvailablePostsByUserId);
 postRouter.get("/sold/:id", getSoldPostsByUserId);
 postRouter.get("/price/:price", getPostsByPrice);
+postRouter.get("/genre/:id", getPostsByGenre);
 postRouter.get("/genre/:id", getPostsByGenre);
 postRouter.get("/all", getAllPosts);
 postRouter.post(
@@ -39,10 +40,6 @@ postRouter.post(
 postRouter.put("/update/:id", ClerkExpressWithAuth(), updatePost);
 postRouter.put("/updateStatus/:id", ClerkExpressWithAuth(), updatePostStatus);
 postRouter.delete("/delete/:id", ClerkExpressWithAuth(), deletePost);
-postRouter.put(
-  "/addFavourite/:id",
-  ClerkExpressWithAuth(),
-  addPostToFavourites
-);
+postRouter.put("/addFavorites/:id", ClerkExpressWithAuth(), addPostToFavorites);
 
 export { postRouter };

@@ -1,6 +1,13 @@
 "use client";
 
 import { BookUploadRouter } from "@/app/api/uploadthing/core";
+import {
+  FromInput,
+  FromTextArea,
+  PrimaryButton,
+  Spinner,
+} from "@/components/utils/utils";
+import { FromSelect } from "@/components/utils/utils.client";
 import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
 import { useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,16 +19,7 @@ import { useForm } from "react-hook-form";
 import { generateMimeTypes } from "uploadthing/client";
 import { z } from "zod";
 
-import {
-  FromInput,
-  FromSelect,
-  FromTextArea,
-  PrimaryButton,
-  Spinner,
-} from "../utils";
-
-const {  useUploadThing } =
-  generateReactHelpers<BookUploadRouter>();
+const { useUploadThing } = generateReactHelpers<BookUploadRouter>();
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -75,6 +73,7 @@ const CreatePostForm = () => {
         return;
       }
       // Fetch Backend
+      console.log(await getToken());
 
       const createPost = await axios.post(
         `http://localhost:3001/posts/create`,
