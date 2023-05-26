@@ -22,13 +22,17 @@ function Filter({ genres }: { genres: GenreType[]}) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label className='md:mr-4'>Genre</label>
-      <select className='bg-black text-white p-2 border-black rounded-lg mb-8 cursor-pointer' value={genreId} onChange={handleGenreChange}>
-        {genres.map((genre: GenreType) => <option key={genre._id} value={genre._id} >{genre.genreName}</option>)}
-      </select>
-      <label className='md:mr-4'>Price</label>
-      <input type="range" defaultValue={0} onChange={handlePriceChange} />
-      <button className='block md:inline-block px-6 py-2 bg-emerald-500 text-white rounded-lg my-4 md:ml-4' type='submit'>Apply</button>
+      <div className='flex flex-col md:flex-row gap-4 md:inline-flex items-baseline'>
+        <label className=''>Genre</label>
+        <select className='bg-black text-white p-2 border-black rounded-lg mb-8 cursor-pointer' value={genreId} onChange={handleGenreChange}>
+          {genres.map((genre: GenreType) => <option key={genre._id} value={genre._id} >{genre.genreName}</option>)}
+        </select>
+      </div>
+      <div className='flex flex-col md:flex-row gap-4 md:inline-flex md:ml-4 items-bseline'>
+        <label className='md:my-4'>Price</label>
+        <input type="range" defaultValue={0} onChange={handlePriceChange} />
+      </div>
+      <button className='block md:inline-block px-6 py-2 bg-emerald-500 text-white rounded-lg my-8 md:ml-4' type='submit'>Apply</button>
     </form>
   )
 }
