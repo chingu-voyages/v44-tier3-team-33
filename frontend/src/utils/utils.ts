@@ -69,6 +69,18 @@ export async function getFilteredPosts(filters: { price: number, genreId: string
     return error.message
   }
 }
+export async function getPostsBySearch(searchQuery: string){
+  try {
+    const response = await axios.get<{post: PostType, userInfo: UserType}[]>(`${url1}/posts/${searchQuery}`)
+    if (response.status !== 200, !response.data) {
+      throw new Error('Failed to fetch data')
+    }    
+    return response.data
+
+  } catch (error: any){
+    return error.message
+  }
+}
 
 
 

@@ -1,19 +1,26 @@
 "use client";
-
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { BsCart3 } from "react-icons/bs";
 import { RxHamburgerMenu } from "react-icons/rx";
 
 function NavbarClient() {
   const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { userId } = useAuth();
+  const router = useRouter()
 
   function toggleNav() {
     setIsOpen((prevOpen) => !prevOpen);
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    router.push(`/search/${searchQuery}`)
+    setSearchQuery("")
   }
 
   return (
@@ -55,15 +62,15 @@ function NavbarClient() {
                 ""
               )}
             </div>
-            <input
-              type="search"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              value={search}
-              placeholder="Search for a book"
-              className=" hidden  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:flex md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
-            />
+            <form onSubmit={handleSubmit}>
+              <input
+                type="search"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                value={searchQuery}
+                placeholder="Search for a book"
+                className=" hidden  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:flex md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
+              />
+            </form>
             {userId ? (
               <div className="flex  w-full justify-between gap-5 px-5  md:w-fit md:items-center md:justify-center">
                 <NavLink href="">
@@ -86,15 +93,17 @@ function NavbarClient() {
       </div>
 
       {isOpen ? <div className=""></div> : ""}
-      <input
-        type="search"
-        onChange={(e) => {
-          setSearch(e.target.value);
-        }}
-        value={search}
-        placeholder="Search for a book"
-        className=" flex  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:hidden md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
-      />
+      <form className="w-full" onSubmit={handleSubmit}>
+        <input
+          type="search"
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          value={searchQuery}
+          placeholder="Search for a book"
+          className=" flex  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:hidden md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
+        /> 
+      </form>
     </div>
   );
 }
