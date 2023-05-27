@@ -1,13 +1,12 @@
 import { Post } from "../models/Post.model";
 import { Genre } from "../models/Genre.model";
 
-import { Cart } from "../models/Cart.models";
 import { Request, Response } from "express";
 import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 import { CreatePostType } from "../validation/post.validate";
-import { getPostsWithUser } from "../utils/utils";
+import { getPostsWithUser, getPostWithUser } from "../utils/utils";
 import { PostType } from "../types/post.types";
 
 //get all posts
@@ -110,6 +109,22 @@ export const getAvailablePostsByUserId = async (
   }
 };
 
+// get Available post by user
+
+export const getAvailablePostByUser = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  try {
+    const post = (await Post.findOne({
+      _id: id,
+      status: "available",
+    })) as PostType;
+    const postWithUser = await getPostWithUser({ post: post });
+    res.status(200).json(postWithUser);
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 // get posts sold by user id
 
 export const getSoldPostsByUserId = async (req: Request, res: Response) => {
@@ -135,7 +150,6 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
   const id = req.params.id;
   console.log(id);
   try {
-
     const posts = (await Post.find({
       genres: id,
       status: "available",
@@ -143,7 +157,6 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
     const postsWithUser = await getPostsWithUser({ posts: posts });
 
     res.status(200).json({ data: postsWithUser });
-
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

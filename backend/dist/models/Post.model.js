@@ -11,6 +11,7 @@ exports.PostSchema = new Schema({
     createdBy: {
         type: String,
         required: true,
+        indexedDB: true,
     },
     imgs: {
         type: [String],
@@ -19,14 +20,17 @@ exports.PostSchema = new Schema({
     author: {
         type: String,
         required: true,
+        indexedDB: true,
     },
     title: {
         type: String,
         required: true,
+        indexedDB: true,
     },
     genres: {
         type: [Schema.Types.ObjectId],
         ref: "Genre",
+        indexedDB: true,
     },
     isbn: {
         type: String,
@@ -35,19 +39,23 @@ exports.PostSchema = new Schema({
         type: String,
         enum: post_types_1.BookConditionEnum,
         required: true,
+        indexedDB: true,
     },
     price: {
         type: Number,
         required: true,
+        indexedDB: true,
     },
     createdAt: {
         type: Date,
         default: Date.now,
+        indexedDB: true,
     },
     status: {
         type: String,
-        enum: ["available", "sold"],
-        default: "available",
+        enum: post_types_1.BookStatusEnum,
+        default: post_types_1.BookStatusEnum[0],
+        indexedDB: true,
     },
 });
 exports.Post = mongoose_1.default.model("Post", exports.PostSchema);

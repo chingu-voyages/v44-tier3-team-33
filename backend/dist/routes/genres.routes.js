@@ -10,7 +10,5 @@ const genreRouter = express_1.default.Router();
 exports.genreRouter = genreRouter;
 genreRouter.get("/", Genre_controller_1.getAllGenres);
 genreRouter.get("/:id", Genre_controller_1.getGenreById);
-genreRouter.post("/create", Genre_controller_1.createGenre);
-genreRouter.delete("/delete/:id", Genre_controller_1.deleteGenre);
 genreRouter.patch("/update/:id", Genre_controller_1.updateGenre);
 //# sourceMappingURL=genres.routes.js.map

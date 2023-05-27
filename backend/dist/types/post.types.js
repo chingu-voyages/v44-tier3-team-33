@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BookGenreEnum = exports.BookConditionEnum = void 0;
+exports.BookStatusEnum = exports.BookGenreEnum = exports.BookConditionEnum = void 0;
 exports.BookConditionEnum = [
     "poor",
     "good",
@@ -34,4 +34,5 @@ exports.BookGenreEnum = [
     "Technology",
     "Travel",
 ];
+exports.BookStatusEnum = ["available", "sold"];
 //# sourceMappingURL=post.types.js.map
