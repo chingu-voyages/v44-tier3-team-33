@@ -10,7 +10,11 @@ import { CgShoppingCart } from "react-icons/cg";
 const Cart = async () => {
   const { getToken } = useAuth();
 
-  const { data: cart, refetch } = useQuery(
+  const {
+    data: cart,
+    refetch,
+    isLoading,
+  } = useQuery(
     ["cart"],
     async () => getCart({ auth: `Bearer ${await getToken()}` }),
     {
@@ -19,6 +23,10 @@ const Cart = async () => {
       },
     }
   );
+
+  if (isLoading) {
+    <h1>Loading...</h1>;
+  }
 
   if (!cart || cart?.posts.length <= 0) {
     return (

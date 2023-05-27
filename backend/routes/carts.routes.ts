@@ -7,7 +7,6 @@ import {
   addOrRemovePostCart,
   clearCart,
   getCartTotalPrice,
-  getCarts,
 } from "../controllers/Cart.controller";
 import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
 

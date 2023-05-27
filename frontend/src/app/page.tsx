@@ -5,15 +5,15 @@ export default async function Home() {
   const posts = await getPosts();
 
   if (!posts) {
-    return <div>No posts here</div>;
+    return <h1>No posts here</h1>;
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-8 ">
+    <div className="flex min-h-screen flex-col items-center justify-start p-4 md:p-8 ">
       <h1 className="mb-8 mt-0 text-3xl font-bold">
         Checkout books posted by sellers
       </h1>
       <PostGrid posts={posts} />
-    </main>
+    </div>
   );
 }
