@@ -9,6 +9,7 @@ import {
 } from "@/components/utils/utils";
 import { FromSelect } from "@/components/utils/utils.client";
 import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
+import { API } from "@/utils/fetchData";
 import { useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
@@ -73,15 +74,12 @@ const CreatePostForm = () => {
         return;
       }
       // Fetch Backend
-      console.log(await getToken());
 
-      const createPost = await axios.post(
-        `http://localhost:3001/posts/create`,
+       await axios.post(
+        `${API}/posts/create`,
         { post: { ...data, imagesURLs: imagesURLs } },
         { headers: { Authorization: await getToken() } }
       );
-      console.log("Req: ", createPost);
-      console.log("Data: ", data);
       console.log("Images: ", imagesURLs);
     } catch (e) {
       console.log(e);
@@ -148,7 +146,7 @@ const CreatePostForm = () => {
           control={control}
         />
 
-        <div className="relative flex h-[170px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
+        <div className="relative flex h-[190px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
           {imagesURLs.length <= 0 ? (
             <div className="text-red-500">
               Please upload at least one image max 4 images

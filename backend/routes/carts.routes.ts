@@ -4,18 +4,15 @@ const cartRouter = express.Router();
 
 import {
   getCart,
-  addPostToCart,
-  removePostFromCart,
+  addOrRemovePostCart,
   clearCart,
   getCartTotalPrice,
-  getCarts,
 } from "../controllers/Cart.controller";
+import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
 
-cartRouter.get("/:userId", getCart);
-cartRouter.post("/:id", addPostToCart);
-cartRouter.delete("/:id", removePostFromCart);
-cartRouter.delete("/", clearCart);
-cartRouter.get("/total-price", getCartTotalPrice);
-cartRouter.get("/", getCarts);
+cartRouter.get("/total-price", ClerkExpressWithAuth(), getCartTotalPrice);
+cartRouter.get("/", ClerkExpressWithAuth(), getCart);
+cartRouter.post("/:id", ClerkExpressWithAuth(), addOrRemovePostCart);
+cartRouter.delete("/", ClerkExpressWithAuth(), clearCart);
 
 export { cartRouter };
