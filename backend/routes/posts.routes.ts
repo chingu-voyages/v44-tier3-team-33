@@ -14,6 +14,7 @@ import {
   updatePostStatus,
   addPostToFavorites,
   getPostsByFilters,
+  getPostsBySearch
 } from "../controllers/Post.controller";
 import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
 
@@ -22,6 +23,7 @@ import { createPostSchema } from "../validation/post.validate";
 const postRouter = express.Router();
 
 postRouter.post("/filters", getPostsByFilters);
+postRouter.get("/:searchQuery", getPostsBySearch);
 postRouter.get("/user/:id", getPostsByUserId);
 postRouter.get("/post/:id", getPostById);
 postRouter.get("/", getAvailablePosts); // this is what should be used in the discover page

@@ -367,3 +367,20 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+
+export const getPostsBySearch = async (req: Request, res: Response) => {
+  const { searchQuery } = req.params;
+  console.log(searchQuery);
+  
+  try {
+    const posts = await Post.find({ title: { $regex: searchQuery, $options: "i"}, status: "available"}) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+   
+  } catch (error: any){
+    console.log(error)
+    res.status(404).json({ message: error.message })
+  }
+}
