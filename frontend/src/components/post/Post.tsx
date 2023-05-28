@@ -2,7 +2,7 @@ import { PostType } from "@/types/post.types";
 import { UserType } from "@/types/user.types";
 import Image from "next/image";
 import React from "react";
-import { AiOutlineHeart, AiOutlineShoppingCart } from "react-icons/ai";
+import { AiOutlineHeart } from "react-icons/ai";
 
 import CartButton from "./CartButton";
 
