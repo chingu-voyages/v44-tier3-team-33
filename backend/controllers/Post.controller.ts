@@ -1,6 +1,5 @@
 import { Post } from "../models/Post.model";
 import { Genre } from "../models/Genre.model";
-
 import { Request, Response } from "express";
 import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose from "mongoose";
@@ -66,9 +65,10 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
   }
 };
 
-// get posts that are available and populate user
+// get posts that are available
 export const getAvailablePosts = async (req: Request, res: Response) => {
   try {
+
     const posts = (await Post.find({ status: "available" })) as PostType[];
 
     const postsWithUser = await getPostsWithUser({ posts: posts });
@@ -179,6 +179,26 @@ export const getPostsByPrice = async (req: Request, res: Response) => {
   }
 };
 
+export const getPostsByFilters = async (req: Request, res: Response) => {
+  const filters = req.body.filters
+  console.log(req.body)
+  
+  try {
+    const posts = await Post.find({
+      price: { $lte: filters.price },
+      genres: filters.genreId ,
+      status: "available",
+    }) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+
+
 //create post
 
 export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
@@ -251,7 +271,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
 
 // update post general info
 
-export const updatePost = async (req: WithAuthProp<Request>, res: Response) => {
+export const updatePost = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { image, author, title, genres, isbn, condition, price } = req.body;
   try {
@@ -297,11 +317,12 @@ export const updatePostStatus = async (req: Request, res: Response) => {
 export const addPostToFavorites = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { userId } = req.body;
-  const user = await users.getUser(userId);
   try {
-    // check if post exists
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No post with id: ${id}`);
+
+    const user = await users.getUser(userId);
+
 
     // check if favourites private metadata exists
     if (!user.privateMetadata.favourites) {
@@ -357,3 +378,20 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+
+export const getPostsBySearch = async (req: Request, res: Response) => {
+  const { searchQuery } = req.params;
+  console.log(searchQuery);
+  
+  try {
+    const posts = await Post.find({ title: { $regex: searchQuery, $options: "i"}, status: "available"}) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+   
+  } catch (error: any){
+    console.log(error)
+    res.status(404).json({ message: error.message })
+  }
+}
