@@ -9,7 +9,7 @@ export async function getPosts() {
   try {
     const response = await axios.get<{
       data: { post: PostType; userInfo: UserType }[];
-    }>(`http://localhost:3001/posts`);
+    }>(`https://bookmart-miv5.onrender.com/posts`);
 
     if ((response.status !== 200, !response.data.data)) {
       // This will activate the closest `error.js` Error Boundary
@@ -25,7 +25,7 @@ export const getCart = async (props: { auth: string }) => {
   try {
     const response = await axios.get<{
       data: CartType;
-    }>(`http://localhost:3001/carts`, {
+    }>(`https://bookmart-miv5.onrender.com/carts`, {
       headers: {
         Authorization: props.auth,
       },
