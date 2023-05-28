@@ -2,6 +2,7 @@
 
 import { PostType } from "@/types/post.types";
 import { UserType } from "@/types/user.types";
+import { API } from "@/utils/fetchData";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -22,7 +23,7 @@ const CartItem = ({
   const { getToken } = useAuth();
   const removeItem = useMutation(async () => {
     const res = await axios.post(
-      `http://localhost:3001/carts/${item.post._id}`,
+      `${API}/carts/${item.post._id}`,
       {},
       { headers: { authorization: `Bearer ${await getToken()}` } }
     );

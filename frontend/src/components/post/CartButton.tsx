@@ -1,10 +1,9 @@
 "use client";
 
-import { getCart } from "@/utils/fetchData";
+import { API, getCart } from "@/utils/fetchData";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { AiOutlineShoppingCart } from "react-icons/ai";
 import { Spinner } from "../utils/utils";
 import {BsCartPlus, BsCartXFill} from 'react-icons/bs'
 
@@ -18,7 +17,7 @@ const CartButton: React.FC<{ postId: string }> = ({ postId }) => {
   const mutateCart = useMutation(
     async (id: string) => {
       const res = await axios.post(
-        `http://localhost:3001/carts/${id}`,
+        `${API}/carts/${id}`,
         {},
         { headers: { authorization: `Bearer ${await getToken()}` } }
       );

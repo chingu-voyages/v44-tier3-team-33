@@ -3,13 +3,13 @@ import { PostType } from "@/types/post.types";
 import { UserType } from "@/types/user.types";
 import axios from "axios";
 
-const url = "https://bookmart-miv5.onrender.com/";
+export const API = "https://bookmart-miv5.onrender.com";
 
 export async function getPosts() {
   try {
     const response = await axios.get<{
       data: { post: PostType; userInfo: UserType }[];
-    }>(`http://localhost:3001/posts`);
+    }>(`${API}/posts`);
 
     if ((response.status !== 200, !response.data.data)) {
       // This will activate the closest `error.js` Error Boundary
@@ -25,7 +25,7 @@ export const getCart = async (props: { auth: string }) => {
   try {
     const response = await axios.get<{
       data: CartType;
-    }>(`http://localhost:3001/carts`, {
+    }>(`${API}/carts`, {
       headers: {
         Authorization: props.auth,
       },
