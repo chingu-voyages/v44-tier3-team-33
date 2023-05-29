@@ -9,19 +9,17 @@ interface IProps {
 }
 
 export default async function Page({ params }: IProps) {
-  const data = await fetch(
-    `https://bookmart-miv5.onrender.com/posts/post/${params.id}`
-  );
+  const data = await fetch(`http://localhost:3000/posts/post/${params.id}`);
 
   const res = await data.json();
+  console.log(res.data);
   const otherPosts = await fetch(
     `http://localhost:3000/posts/${res.data.post?.createdBy}`
   );
   const otherPostsRes = await otherPosts.json().then((res) => res.data);
-  console.log(otherPostsRes);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="ml-12 flex flex-col gap-6">
       <div className=" flex flex-row gap-28">
         <div className="">
           <Image
@@ -31,24 +29,47 @@ export default async function Page({ params }: IProps) {
             height={250}
           />
         </div>
-        <div className=" flex flex-col">
-          <div>
+        <div className="flex flex-col  gap-2">
+          {/* <div>
             <h1 className=" text-2xl font-bold">{res.data.post?.title}</h1>
+          </div> */}
+          <div className=" mt-2">
+            <h1 className=" text-3xl font-bold">{res.data.post?.price}.00$</h1>
           </div>
           <div>
-            <h1 className=" text-xl font-bold">{res.data.post?.price}.00$</h1>
+            <h1>
+              <span className=" font-bold">Description</span> :{" "}
+              {res.data.post?.description}
+            </h1>
+          </div>
+          <div className="inline-block">
+            <span className=" font-bold">Genres </span> :
+            {res.data.post?.genres?.map((genre: any) => (
+              <h1 className="inline-block" key={genre}>
+                {genre.genreName}, &nbsp;
+              </h1>
+            ))}
           </div>
           <div>
-            <h1>{res.data.post?.description}</h1>
+            <h1>
+              <span className=" font-bold">Condition</span> :{" "}
+              {res.data.post?.condition}
+            </h1>
           </div>
           <div>
-            <h1>{res.data.post?.genre}</h1>
+            <h1>
+              <span className=" font-bold">Author: </span>
+              {res.data.post?.author}
+            </h1>
           </div>
           <div>
-            <h1>{res.data.post?.condition}</h1>
+            <h1>
+              <span className=" font-bold">Posted By: </span>
+              {res.data.userInfo?.firstName} {res.data.userInfo?.lastName}
+            </h1>
           </div>
           <div className=" mt-10">
-            <button className=" rounded-sm border px-10 py-2 ">
+            <button className=" rounded-md border px-12 py-2 hover:bg-red-300">
               <a href={"#"} className=" font-bold">
                 Buy
               </a>
@@ -57,20 +78,25 @@ export default async function Page({ params }: IProps) {
         </div>
       </div>
       <div>
-        <h1 className=" text-xl font-bold">Other posts by this user</h1>
+        <h1 className=" my-3 text-xl font-bold">Other posts by this user</h1>
         <div className=" flex flex-row flex-wrap gap-6">
           {otherPostsRes?.slice(0, 2).map((post: any) => (
-            <div className="flex flex-col" key={post._id}>
-              <div>
-                <Image
-                  src={post.post?.imgs?.[0]}
-                  alt="product"
-                  width={100}
-                  height={100}
-                />
+            <div className="flex flex-col gap-3" key={post._id}>
+              <div className=" w-44 rounded-md border-2 p-2">
+                <div className=" relative h-56 w-40 rounded-md border border-t-fuchsia-950 p-2">
+                  <Image
+                    src={post.post?.imgs?.[0]}
+                    alt="product"
+                    fill
+                    sizes="(max-width: 500px) 100px, (max-width: 900px) 200px, (max-width: 1200px) 300px, "
+                  />
+                </div>
 
                 <h2 className="">{post.post.title}</h2>
                 <h2 className="">{post.post.price}.00$</h2>
+                <h2 className="">
+                  {post.userInfo?.firstName} {post.userInfo?.lastName}{" "}
+                </h2>
               </div>
             </div>
           ))}
