@@ -25,7 +25,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
 export const getPostById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).populate("genres");
 
     if (!post?.createdBy || !post) {
       return res.status(404).json({ message: "Post not found" });
