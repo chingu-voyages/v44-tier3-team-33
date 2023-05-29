@@ -19,7 +19,7 @@ export default async function Page({ params }: IProps) {
   const otherPostsRes = await otherPosts.json().then((res) => res.data);
 
   return (
-    <div className="ml-12 flex flex-col gap-6">
+    <div className="flex flex-col items-center gap-6">
       <div className=" flex flex-row gap-28">
         <div className="">
           <Image
@@ -80,7 +80,7 @@ export default async function Page({ params }: IProps) {
       <div>
         <h1 className=" my-3 text-xl font-bold">Other posts by this user</h1>
         <div className=" flex flex-row flex-wrap gap-6">
-          {otherPostsRes?.slice(0, 2).map((post: any) => (
+          {otherPostsRes?.slice(0, 3).map((post: any) => (
             <div className="flex flex-col gap-3" key={post._id}>
               <div className=" w-44 rounded-md border-2 p-2">
                 <div className=" relative h-56 w-40 rounded-md border border-t-fuchsia-950 p-2">
