@@ -1,8 +1,13 @@
-import PostGrid from "@/components/post/PostGrid";
-import { getPosts } from "@/utils/fetchData";
+import { getPosts, getGenres } from '@/utils/utils'
+import PostGrid from '@/components/post/PostGrid';
+import Filter from '@/components/filters/Filters';
 
 export default async function Home() {
-  const posts = await getPosts();
+  
+  const userPosts = getPosts()
+  const availableGenres = getGenres()
+
+  const [posts, genres] = await Promise.all([userPosts, availableGenres])
 
   if (!posts) {
     return <h1>No posts here</h1>;
