@@ -88,6 +88,7 @@ const CreatePostForm = () => {
     data: FormValuesType;
     imagesURLs: string[];
   }) => void = async ({ data, imagesURLs }) => {
+    setFormLoading(true);
     try {
       const validateImages = z.string().url().array().min(1).max(4);
       const validateImagesParsed = validateImages.safeParse(imagesURLs);
@@ -99,17 +100,16 @@ const CreatePostForm = () => {
         return;
       }
 
-      const createPost =  await axios.post(
+      const createPost = await axios.post(
         `${API}/posts/create`,
         { post: { ...data, imagesURLs: imagesURLs } },
         { headers: { Authorization: await getToken() } }
       );
-      if (createPost.status === 201) {
+      if (createPost.status === 200) {
         setFormLoading(false);
         reset();
         alert("Post created successfully");
       }
-
     } catch (e) {
       setFormLoading(false);
       console.log(e);
@@ -216,7 +216,12 @@ const CreatePostForm = () => {
           )}
         </div>
         <UploadPostButton setImages={setImagesURLs} images={imagesURLs} />
-        <PrimaryButton type="submit" label="Submit" isLoading={formLoading} />
+        <PrimaryButton
+          type="submit"
+          label="Submit"
+          isLoading={formLoading}
+          disabled={formLoading}
+        />
       </form>
     </div>
   );
