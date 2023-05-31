@@ -82,8 +82,8 @@ exports.getAvailablePosts = getAvailablePosts;
 const getAvailablePostsByUserId = async (req, res) => {
     const id = req.params.id;
     try {
-        const posts = await Post_model_1.Post.find({ createdBy: id, status: "available" });
-        const postsWithUser = Promise.all(posts.map(async (post) => {
+        const posts = await Post_model_1.Post.find({ createdBy: id, status: "available" }).limit(3);
+        const postsWithUser = await Promise.all(posts.map(async (post) => {
             const user = await clerk_sdk_node_1.users.getUser(post.createdBy);
             return {
                 post: post,
@@ -96,6 +96,7 @@ const getAvailablePostsByUserId = async (req, res) => {
                 },
             };
         }));
+        console.log(postsWithUser);
         res.status(200).json(postsWithUser);
     }
     catch (error) {

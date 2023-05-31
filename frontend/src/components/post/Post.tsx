@@ -2,7 +2,7 @@ import { PostType } from "@/types/post.types";
 import { UserType } from "@/types/user.types";
 import Image from "next/image";
 import React from "react";
-import { AiOutlineHeart, AiOutlineShoppingCart } from "react-icons/ai";
+import { AiOutlineHeart } from "react-icons/ai";
 
 import CartButton from "./CartButton";
 
@@ -16,7 +16,7 @@ function Post({
   const { title, imgs, price } = post;
 
   return (
-    <div className="flex w-[250px] flex-col items-center justify-between  rounded-xl border-2 border-gray-200 text-black md:w-[300px]">
+    <div className="flex w-[250px] cursor-pointer flex-col items-center  justify-between rounded-xl border-2 border-gray-200 text-black md:w-[300px]">
       <div className=" relative h-56 w-40 rounded-md border border-t-fuchsia-950">
         <Image
           src={imgs?.[0]}
