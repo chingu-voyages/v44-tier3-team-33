@@ -108,6 +108,7 @@ const CreatePostForm = () => {
       if (createPost.status === 200) {
         setFormLoading(false);
         reset();
+        setImagesURLs([]);
         alert("Post created successfully");
       }
     } catch (e) {

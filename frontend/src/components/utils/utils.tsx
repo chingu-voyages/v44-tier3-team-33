@@ -82,10 +82,10 @@ export const PrimaryButton: React.FC<{
         }
       }}
       type={type ? type : "button"}
-      className={`w-full rounded-full flex items-center justify-center border border-gray-500 bg-white px-3 py-2 text-slate-600 transition-colors duration-500 hover:bg-slate-950 hover:text-white ${className}`}
+      className={`flex w-full items-center justify-center rounded-full border border-gray-500 bg-white px-3 py-2 text-slate-600 transition-colors duration-500 hover:bg-slate-950 hover:text-white ${className}`}
       disabled={disabled}
     >
-      {isLoading? <Spinner /> : label}
+      {isLoading ? <Spinner /> : label}
     </button>
   );
 };

@@ -1,22 +1,16 @@
 "use client";
 
 import { type BookConditionEnum, type BookGenreEnum } from "@/types/post.types";
-import {
-  MultiSelectBox,
-  MultiSelectBoxItem,
-  SelectBox,
-  SelectBoxItem,
-} from "@tremor/react";
+
 import { useState } from "react";
 import type {
   Control,
   FieldError,
   FieldErrorsImpl,
   Merge,
-  UseFormRegisterReturn,
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import Select, { ActionMeta, SingleValue } from "react-select";
+import Select from "react-select";
 
 export const FromSelect: React.FC<{
   values: string[] | typeof BookConditionEnum | typeof BookGenreEnum;
