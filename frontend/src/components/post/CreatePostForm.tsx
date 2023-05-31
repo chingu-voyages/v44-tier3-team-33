@@ -18,12 +18,23 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { generateMimeTypes } from "uploadthing/client";
 import { z } from "zod";
+import { ExpandedRouteConfig, utapi } from "uploadthing/server";
 
 const { useUploadThing } = generateReactHelpers<BookUploadRouter>();
 
+const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
+  const fileTypes = config ? Object.keys(config) : [];
+
+  const maxFileCount = config
+    ? Object.values(config).map((v) => v.maxFileCount)
+    : [];
+
+  return { fileTypes, multiple: maxFileCount.some((v) => v && v > 1) };
+};
+
 const FormSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  author: z.string().min(1, { message: "Author is required" }),
+  title: z.string().min(1, { message: "Title is required" }).max(100),
+  author: z.string().min(1, { message: "Author is required" }).max(100),
   description: z
     .string()
     .min(5, { message: "short description min 5" })
@@ -171,21 +182,15 @@ const CreatePostForm = () => {
                     className="absolute right-0 top-0 m-0 flex cursor-pointer items-center justify-center rounded-full  bg-white px-2 py-1 text-center text-xs hover:bg-slate-950 hover:text-white "
                     onClick={async () => {
                       try {
-                        // until they fix it
-                        // const res = await axios.post(
-                        //   `https://uploadthing.com/api/deleteFile`,
-                        //   {
-                        //     headers: {
-                        //       "x-uploadthing-api-key":
-                        //         process.env.UPLOADTHING_SECRET,
-                        //     },
-                        //     data: { files: [img.slice(26, img.length)] },
-                        //   }
-                        // );
+                        const res = await utapi.deleteFiles(
+                          img.slice(26, img.length)
+                        );
+                        if (res.success) {
+                          let newImages = [...imagesURLs];
+                          newImages.splice(i, 1);
+                          setImagesURLs(newImages);
+                        }
                         // console.log("Delete Response: ", res);
-                        let newImages = [...imagesURLs];
-                        newImages.splice(i, 1);
-                        setImagesURLs(newImages);
                       } catch (e) {
                         console.log(e);
                       }
@@ -227,8 +232,11 @@ const UploadPostButton: React.FC<{
     },
   });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { config } = permittedFileInfo ?? {};
 
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config
+  );
   return (
     <div className="flex w-full flex-col gap-2">
       <div className=" flex w-full flex-col items-center gap-2">
@@ -243,7 +251,7 @@ const UploadPostButton: React.FC<{
             type="file"
             multiple={true}
             max={4}
-            accept={generateMimeTypes(fileTypes ?? []).join(", ")}
+            accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
             disabled={isUploading}
             onChange={async (e) => {
               console.log(e.target.files);
@@ -267,7 +275,8 @@ const UploadPostButton: React.FC<{
           {fileTypes && (
             <p className="text-xs leading-5 text-gray-600">
               {`${fileTypes.join(", ")}`}{" "}
-              {maxSize && `up to ${maxSize}, ${images.length} Files Uploaded`}
+              {config?.image?.maxFileSize &&
+                `up to ${config?.image?.maxFileSize}, ${images.length} Files Uploaded`}
             </p>
           )}
         </div>
