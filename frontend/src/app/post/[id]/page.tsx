@@ -1,5 +1,6 @@
 import { PostType } from "@/types/post.types";
 import Image from "next/image";
+import Link from "next/link";
 
 interface IProps {
   params: {
@@ -66,7 +67,7 @@ export default async function Page({ params }: IProps) {
           <div>
             <h3>
               <span className=" font-bold">Posted By: </span>
-              {res.data.userInfo?.firstName} {res.data.userInfo?.lastName}
+              <Link href={`/seller/${res.data.post?.createdBy}`}>{res.data.userInfo?.firstName} {res.data.userInfo?.lastName}</Link>
             </h3>
           </div>
           <div className="mt-10">
