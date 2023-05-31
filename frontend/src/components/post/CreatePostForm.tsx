@@ -7,7 +7,7 @@ import {
   PrimaryButton,
   Spinner,
 } from "@/components/utils/utils";
-import { FromSelect } from "@/components/utils/utils.client";
+import { FormSelectM, FromSelect } from "@/components/utils/utils.client";
 import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
 import { useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { generateMimeTypes } from "uploadthing/client";
 import { z } from "zod";
-import { ExpandedRouteConfig, utapi } from "uploadthing/server";
+import { ExpandedRouteConfig } from "uploadthing/server";
+import { useMutation } from "@tanstack/react-query";
 
 const { useUploadThing } = generateReactHelpers<BookUploadRouter>();
 
@@ -57,13 +58,29 @@ type FormValuesType = z.infer<typeof FormSchema>;
 
 const CreatePostForm = () => {
   const [imagesURLs, setImagesURLs] = useState<string[]>([]);
+  const [formLoading, setFormLoading] = useState(false);
   const { getToken } = useAuth();
+
+  const deleteImage = useMutation(
+    async (img: string) => {
+      try {
+        const res = await axios.delete(`/api/image/${img}`);
+
+        console.log(res.data);
+        return res.data;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    
+  );
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
+    reset
   } = useForm<FormValuesType>({
     resolver: zodResolver(FormSchema),
     defaultValues: defaultValues,
@@ -83,18 +100,21 @@ const CreatePostForm = () => {
         }
         return;
       }
-      // Fetch Backend
-      console.log(await getToken());
 
+      setFormLoading(true);
       const createPost = await axios.post(
         `http://localhost:3001/posts/create`,
         { post: { ...data, imagesURLs: imagesURLs } },
         { headers: { Authorization: await getToken() } }
       );
-      console.log("Req: ", createPost);
-      console.log("Data: ", data);
-      console.log("Images: ", imagesURLs);
+      if(createPost.status === 201) {
+        setFormLoading(false);
+        reset();
+        alert("Post created successfully");
+      }
+      
     } catch (e) {
+      setFormLoading(false);
       console.log(e);
     }
   };
@@ -158,8 +178,9 @@ const CreatePostForm = () => {
           values={BookGenreEnum}
           control={control}
         />
+        <FormSelectM />
 
-        <div className="relative flex h-[170px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
+        <div className="relative flex h-[190px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
           {imagesURLs.length <= 0 ? (
             <div className="text-red-500">
               Please upload at least one image max 4 images
@@ -179,24 +200,18 @@ const CreatePostForm = () => {
                     className="h-[150px] w-[100px] object-scale-down  "
                   />
                   <div
-                    className="absolute right-0 top-0 m-0 flex cursor-pointer items-center justify-center rounded-full  bg-white px-2 py-1 text-center text-xs hover:bg-slate-950 hover:text-white "
+                    className="absolute right-0 top-0 m-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full  bg-red-600 px-2 py-1 text-center text-xs hover:bg-gray-500 hover:text-white "
                     onClick={async () => {
-                      try {
-                        const res = await utapi.deleteFiles(
-                          img.slice(26, img.length)
-                        );
-                        if (res.success) {
+                      deleteImage.mutate(img.slice(26, img.length), {
+                        onSuccess: () => {
                           let newImages = [...imagesURLs];
                           newImages.splice(i, 1);
                           setImagesURLs(newImages);
-                        }
-                        // console.log("Delete Response: ", res);
-                      } catch (e) {
-                        console.log(e);
-                      }
+                        },
+                      });
                     }}
                   >
-                    x
+                    {deleteImage.isLoading ? <Spinner /> : "X"}
                   </div>
                   {imagesURLs.length > 4}
                 </div>
@@ -205,7 +220,7 @@ const CreatePostForm = () => {
           )}
         </div>
         <UploadPostButton setImages={setImagesURLs} images={imagesURLs} />
-        <PrimaryButton type="submit" label="Submit" />
+        <PrimaryButton type="submit" label="Submit" isLoading={formLoading} />
       </form>
     </div>
   );

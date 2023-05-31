@@ -72,7 +72,8 @@ export const PrimaryButton: React.FC<{
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
-}> = ({ className, type, label, onClick, disabled }) => {
+  isLoading?: boolean;
+}> = ({ className, type, label, onClick, disabled, isLoading }) => {
   return (
     <button
       onClick={() => {
@@ -84,7 +85,7 @@ export const PrimaryButton: React.FC<{
       className={`w-full rounded-full border border-gray-500 bg-white px-3 py-2 text-slate-600 transition-colors duration-500 hover:bg-slate-950 hover:text-white ${className}`}
       disabled={disabled}
     >
-      {label}
+      {isLoading? <Spinner /> : label}
     </button>
   );
 };

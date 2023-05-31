@@ -13,7 +13,6 @@ import type {
   FieldError,
   FieldErrorsImpl,
   Merge,
-  UseFormRegisterReturn,
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
@@ -82,3 +81,11 @@ export const FromSelect: React.FC<{
     </div>
   );
 };
+
+
+export const FormSelectM:React.FC<{}>=()=>{
+  return <select multiple >
+    <option value="1">1</option>
+    <option value="2">2</option>
+  </select>
+}
