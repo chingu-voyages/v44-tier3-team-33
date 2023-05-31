@@ -21,8 +21,8 @@ export default async function Page({ params }: IProps) {
 
   return (
     <div className="flex flex-col items-center gap-6 p-4 pt-0 my-8">
-      <div className=" flex flex-row gap-28 mb-8">
-        <div className="">
+      <div className=" flex flex-col sm:flex-row gap-8 sm:gap-28 mb-8">
+        <div className="mb-0">
           <Image
             src={res.data.post?.imgs?.[0]}
             alt="product"
@@ -30,7 +30,7 @@ export default async function Page({ params }: IProps) {
             height={250}
           />
         </div>
-        <div className="flex flex-col  gap-2">
+        <div className="flex flex-col gap-2">
           {/* <div>
             <h1 className=" text-2xl font-bold">{res.data.post?.title}</h1>
           </div> */}
@@ -69,8 +69,8 @@ export default async function Page({ params }: IProps) {
               {res.data.userInfo?.firstName} {res.data.userInfo?.lastName}
             </h3>
           </div>
-          <div className=" mt-10">
-            <button className=" rounded-md border px-12 py-2 hover:bg-red-300">
+          <div className="mt-10">
+            <button className="w-full rounded-md border px-12 py-2 hover:bg-red-300">
               <a href={"#"} className=" font-bold">
                 Buy
               </a>
@@ -80,7 +80,7 @@ export default async function Page({ params }: IProps) {
       </div>
       <div>
         <h2 className=" my-3 text-xl font-bold">Other posts by this user</h2>
-        <div className=" flex flex-row flex-wrap gap-6">
+        <div className=" flex flex-row flex-wrap gap-6 justify-center">
           {otherPostsRes?.slice(0, 3).map((post: any) => (
             <div className="flex flex-col gap-3" key={post._id}>
               <div className=" w-44 rounded-md border-2 p-2">
