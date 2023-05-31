@@ -22,7 +22,7 @@ export default async function Page({ params }: IProps) {
   return (
     <div className="flex flex-col items-center gap-6 p-4 pt-0 my-8">
       <div className=" flex flex-col sm:flex-row gap-8 sm:gap-28 mb-8">
-        <div className="mb-0">
+        <div className="mx-auto">
           <Image
             src={res.data.post?.imgs?.[0]}
             alt="product"
