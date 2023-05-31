@@ -7,7 +7,7 @@ import {
   PrimaryButton,
   Spinner,
 } from "@/components/utils/utils";
-import { FormSelectM, FromSelect } from "@/components/utils/utils.client";
+import { FromSelect } from "@/components/utils/utils.client";
 import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
 import { useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -61,26 +61,23 @@ const CreatePostForm = () => {
   const [formLoading, setFormLoading] = useState(false);
   const { getToken } = useAuth();
 
-  const deleteImage = useMutation(
-    async (img: string) => {
-      try {
-        const res = await axios.delete(`/api/image/${img}`);
+  const deleteImage = useMutation(async (img: string) => {
+    try {
+      const res = await axios.delete(`/api/image/${img}`);
 
-        console.log(res.data);
-        return res.data;
-      } catch (e) {
-        console.log(e);
-      }
+      console.log(res.data);
+      return res.data;
+    } catch (e) {
+      console.log(e);
     }
-    
-  );
+  });
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-    reset
+    reset,
   } = useForm<FormValuesType>({
     resolver: zodResolver(FormSchema),
     defaultValues: defaultValues,
@@ -107,12 +104,11 @@ const CreatePostForm = () => {
         { post: { ...data, imagesURLs: imagesURLs } },
         { headers: { Authorization: await getToken() } }
       );
-      if(createPost.status === 201) {
+      if (createPost.status === 201) {
         setFormLoading(false);
         reset();
         alert("Post created successfully");
       }
-      
     } catch (e) {
       setFormLoading(false);
       console.log(e);
@@ -178,7 +174,6 @@ const CreatePostForm = () => {
           values={BookGenreEnum}
           control={control}
         />
-        <FormSelectM />
 
         <div className="relative flex h-[190px] w-full overflow-x-scroll rounded-lg border border-gray-600 p-2">
           {imagesURLs.length <= 0 ? (

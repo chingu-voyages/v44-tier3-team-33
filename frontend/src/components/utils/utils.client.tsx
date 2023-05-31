@@ -13,8 +13,10 @@ import type {
   FieldError,
   FieldErrorsImpl,
   Merge,
+  UseFormRegisterReturn,
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import Select, { ActionMeta, SingleValue } from "react-select";
 
 export const FromSelect: React.FC<{
   values: string[] | typeof BookConditionEnum | typeof BookGenreEnum;
@@ -49,43 +51,26 @@ export const FromSelect: React.FC<{
         control={control}
         render={({ field }) =>
           multiple ? (
-            <MultiSelectBox
-              id={name}
-              placeholder={label}
-              {...field}
-              onValueChange={(value) => {
-                setSelectedValues(value);
-                field.onChange(value);
+            <Select
+              isMulti={multiple}
+              options={values.map((item) => ({ value: item, label: item }))}
+              className="w-full"
+              onChange={(newValues) => {
+                field.onChange(newValues.map((value) => value.value));
               }}
-            >
-              {values.map((value) => (
-                <MultiSelectBoxItem key={value} text={value} value={value} />
-              ))}
-            </MultiSelectBox>
+            />
           ) : (
-            <SelectBox
-              id={name}
-              placeholder={label}
-              {...field}
-              onValueChange={(value) => {
-                field.onChange(value);
+            <Select
+              isMulti={multiple}
+              options={values.map((item) => ({ value: item, label: item }))}
+              className="w-full"
+              onChange={(value) => {
+                field.onChange(value?.value);
               }}
-            >
-              {values.map((value) => (
-                <SelectBoxItem key={value} text={value} value={value} />
-              ))}
-            </SelectBox>
+            />
           )
         }
       />
     </div>
   );
 };
-
-
-export const FormSelectM:React.FC<{}>=()=>{
-  return <select multiple >
-    <option value="1">1</option>
-    <option value="2">2</option>
-  </select>
-}
