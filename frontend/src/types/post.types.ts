@@ -8,7 +8,7 @@ export type PostType = {
   description: string;
   imgs: string[];
   condition: BookConditionType;
-  genre: BookGenreType;
+  genre: BookGenreType[];
   isbn: string | undefined;
   price: number;
 };

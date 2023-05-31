@@ -1,14 +1,11 @@
 import { Post } from "../models/Post.model";
 import { Genre } from "../models/Genre.model";
-
-
-import { Cart } from "../models/Cart.models";
 import { Request, Response } from "express";
 import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 import { CreatePostType } from "../validation/post.validate";
-import { getPostsWithUser } from "../utils/utils";
+import { getPostsWithUser, getPostWithUser } from "../utils/utils";
 import { PostType } from "../types/post.types";
 
 //get all posts
@@ -27,7 +24,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
 export const getPostById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).populate("genres");
 
     if (!post?.createdBy || !post) {
       return res.status(404).json({ message: "Post not found" });
@@ -90,8 +87,10 @@ export const getAvailablePostsByUserId = async (
 ) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id, status: "available" });
-    const postsWithUser = Promise.all(
+    const posts = await Post.find({ createdBy: id, status: "available" }).limit(
+      2
+    );
+    const postsWithUser = await Promise.all(
       posts.map(async (post) => {
         const user = await users.getUser(post.createdBy);
         return {
@@ -106,7 +105,24 @@ export const getAvailablePostsByUserId = async (
         };
       })
     );
+    console.log(postsWithUser);
     res.status(200).json(postsWithUser);
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+// get Available post by user
+
+export const getAvailablePostByUser = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  try {
+    const post = (await Post.findOne({
+      _id: id,
+      status: "available",
+    })) as PostType;
+    const postWithUser = await getPostWithUser({ post: post });
+    res.status(200).json(postWithUser);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -137,7 +153,6 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
   const id = req.params.id;
   console.log(id);
   try {
-
     const posts = (await Post.find({
       genres: id,
       status: "available",
@@ -145,7 +160,6 @@ export const getPostsByGenre = async (req: Request, res: Response) => {
     const postsWithUser = await getPostsWithUser({ posts: posts });
 
     res.status(200).json({ data: postsWithUser });
-
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -367,3 +381,20 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+
+export const getPostsBySearch = async (req: Request, res: Response) => {
+  const { searchQuery } = req.params;
+  console.log(searchQuery);
+  
+  try {
+    const posts = await Post.find({ title: { $regex: searchQuery, $options: "i"}, status: "available"}) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+   
+  } catch (error: any){
+    console.log(error)
+    res.status(404).json({ message: error.message })
+  }
+}

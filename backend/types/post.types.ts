@@ -1,5 +1,5 @@
 export type PostType = {
-  id: string;
+  _id: string;
   createdBy: string;
   createdAt: Date;
   author: string;
@@ -8,6 +8,9 @@ export type PostType = {
   imgs: string[];
   condition: BookConditionType;
   genre: BookGenreType[];
+  updatedAt: Date;
+  isbn: string | undefined;
+  price: number;
 };
 
 export const BookConditionEnum = [
