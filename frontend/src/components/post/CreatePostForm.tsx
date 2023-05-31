@@ -9,6 +9,7 @@ import {
 } from "@/components/utils/utils";
 import { FormSelectM, FromSelect } from "@/components/utils/utils.client";
 import { BookConditionEnum, BookGenreEnum } from "@/types/post.types";
+import { API } from "@/utils/fetchData";
 import { useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
@@ -101,18 +102,13 @@ const CreatePostForm = () => {
         return;
       }
 
-      setFormLoading(true);
-      const createPost = await axios.post(
-        `http://localhost:3001/posts/create`,
+       await axios.post(
+        `${API}/posts/create`,
         { post: { ...data, imagesURLs: imagesURLs } },
         { headers: { Authorization: await getToken() } }
       );
-      if(createPost.status === 201) {
-        setFormLoading(false);
-        reset();
-        alert("Post created successfully");
-      }
-      
+      console.log("Images: ", imagesURLs);
+
     } catch (e) {
       setFormLoading(false);
       console.log(e);

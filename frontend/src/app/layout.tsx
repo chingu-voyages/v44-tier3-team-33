@@ -4,8 +4,8 @@ import "@uploadthing/react/styles.css";
 import { Inter } from "next/font/google";
 
 import Modal from "../components/Modal";
-import "./globals.css";
 import Providers from "../components/utils/query/providers";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <Providers>
             <Navbar />
-            <main className="mt-[70px] flex min-h-screen flex-col items-center justify-start  gap-5 px-2 py-3 text-black md:mt-0">
+            <main className="mt-[70px] min-h-screen px-2 py-3 text-black md:mt-0">
               {children}
             </main>
             <Modal />

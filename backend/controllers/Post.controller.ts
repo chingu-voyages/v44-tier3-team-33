@@ -1,6 +1,5 @@
 import { Post } from "../models/Post.model";
 import { Genre } from "../models/Genre.model";
-
 import { Request, Response } from "express";
 import { users, WithAuthProp } from "@clerk/clerk-sdk-node";
 import mongoose from "mongoose";
@@ -25,7 +24,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
 export const getPostById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).populate("genres");
 
     if (!post?.createdBy || !post) {
       return res.status(404).json({ message: "Post not found" });
@@ -66,9 +65,10 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
   }
 };
 
-// get posts that are available and populate user
+// get posts that are available
 export const getAvailablePosts = async (req: Request, res: Response) => {
   try {
+
     const posts = (await Post.find({ status: "available" })) as PostType[];
 
     const postsWithUser = await getPostsWithUser({ posts: posts });
@@ -87,8 +87,10 @@ export const getAvailablePostsByUserId = async (
 ) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id, status: "available" });
-    const postsWithUser = Promise.all(
+    const posts = await Post.find({ createdBy: id, status: "available" }).limit(
+      2
+    );
+    const postsWithUser = await Promise.all(
       posts.map(async (post) => {
         const user = await users.getUser(post.createdBy);
         return {
@@ -103,6 +105,7 @@ export const getAvailablePostsByUserId = async (
         };
       })
     );
+    console.log(postsWithUser);
     res.status(200).json(postsWithUser);
   } catch (error: any) {
     res.status(404).json({ message: error.message });
@@ -179,6 +182,26 @@ export const getPostsByPrice = async (req: Request, res: Response) => {
   }
 };
 
+export const getPostsByFilters = async (req: Request, res: Response) => {
+  const filters = req.body.filters
+  console.log(req.body)
+  
+  try {
+    const posts = await Post.find({
+      price: { $lte: filters.price },
+      genres: filters.genreId ,
+      status: "available",
+    }) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+
+
 //create post
 
 export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
@@ -251,7 +274,7 @@ export const createPost = async (req: WithAuthProp<Request>, res: Response) => {
 
 // update post general info
 
-export const updatePost = async (req: WithAuthProp<Request>, res: Response) => {
+export const updatePost = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { image, author, title, genres, isbn, condition, price } = req.body;
   try {
@@ -297,11 +320,12 @@ export const updatePostStatus = async (req: Request, res: Response) => {
 export const addPostToFavorites = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { userId } = req.body;
-  const user = await users.getUser(userId);
   try {
-    // check if post exists
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No post with id: ${id}`);
+
+    const user = await users.getUser(userId);
+
 
     // check if favourites private metadata exists
     if (!user.privateMetadata.favourites) {
@@ -357,3 +381,20 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+
+export const getPostsBySearch = async (req: Request, res: Response) => {
+  const { searchQuery } = req.params;
+  console.log(searchQuery);
+  
+  try {
+    const posts = await Post.find({ title: { $regex: searchQuery, $options: "i"}, status: "available"}) as PostType[]
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    res.status(200).json({ data: postsWithUser });
+   
+  } catch (error: any){
+    console.log(error)
+    res.status(404).json({ message: error.message })
+  }
+}
