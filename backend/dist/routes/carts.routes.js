@@ -8,10 +8,9 @@ const express_1 = __importDefault(require("express"));
 const cartRouter = express_1.default.Router();
 exports.cartRouter = cartRouter;
 const Cart_controller_1 = require("../controllers/Cart.controller");
-cartRouter.get("/:userId", Cart_controller_1.getCart);
-cartRouter.post("/:id", Cart_controller_1.addPostToCart);
-cartRouter.delete("/:id", Cart_controller_1.removePostFromCart);
-cartRouter.delete("/", Cart_controller_1.clearCart);
-cartRouter.get("/total-price", Cart_controller_1.getCartTotalPrice);
-cartRouter.get("/", Cart_controller_1.getCarts);
+const clerk_sdk_node_1 = require("@clerk/clerk-sdk-node");
+cartRouter.get("/total-price", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Cart_controller_1.getCartTotalPrice);
+cartRouter.get("/", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Cart_controller_1.getCart);
+cartRouter.post("/:id", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Cart_controller_1.addOrRemovePostCart);
+cartRouter.delete("/", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Cart_controller_1.clearCart);
 //# sourceMappingURL=carts.routes.js.map

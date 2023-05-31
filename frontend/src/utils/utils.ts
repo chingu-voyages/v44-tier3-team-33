@@ -9,12 +9,12 @@ const url1= " http://localhost:3001"
 
 export async function getPosts(){
   try {
-    const response = await axios.get<{post:PostType, userInfo: UserType}[]>(`${url}/posts`)
+    const response = await axios.get<{data : {post:PostType, userInfo: UserType}[]}>(`${url}/posts`)
     if(response.status !== 200 , !response.data){
         // This will activate the closest `error.js` Error Boundary
         throw new Error('Failed to fetch data');
     }
-    return response.data
+    return response.data.data
 
   } catch(error: any){
     console.log(error)
