@@ -20,8 +20,8 @@ export default async function Page({ params }: IProps) {
   const otherPostsRes = await otherPosts.json().then((res) => res);
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className=" flex flex-row gap-28">
+    <div className="flex flex-col items-center gap-6 p-4 pt-0 my-8">
+      <div className=" flex flex-row gap-28 mb-8">
         <div className="">
           <Image
             src={res.data.post?.imgs?.[0]}
@@ -35,39 +35,39 @@ export default async function Page({ params }: IProps) {
             <h1 className=" text-2xl font-bold">{res.data.post?.title}</h1>
           </div> */}
           <div className=" mt-2">
-            <h1 className=" text-3xl font-bold">{res.data.post?.price}.00$</h1>
+            <h3 className=" text-3xl font-bold">{res.data.post?.price}.00$</h3>
           </div>
           <div>
-            <h1>
+            <h3>
               <span className=" font-bold">Description</span> :{" "}
               {res.data.post?.description}
-            </h1>
+            </h3>
           </div>
           <div className="inline-block">
             <span className=" font-bold">Genres </span> :
             {res.data.post?.genres?.map((genre: any) => (
-              <h1 className="inline-block" key={genre}>
+              <h3 className="inline-block" key={genre}>
                 {genre.genreName}, &nbsp;
-              </h1>
+              </h3>
             ))}
           </div>
           <div>
-            <h1>
+            <h3>
               <span className=" font-bold">Condition</span> :{" "}
               {res.data.post?.condition}
-            </h1>
+            </h3>
           </div>
           <div>
-            <h1>
+            <h3>
               <span className=" font-bold">Author: </span>
               {res.data.post?.author}
-            </h1>
+            </h3>
           </div>
           <div>
-            <h1>
+            <h3>
               <span className=" font-bold">Posted By: </span>
               {res.data.userInfo?.firstName} {res.data.userInfo?.lastName}
-            </h1>
+            </h3>
           </div>
           <div className=" mt-10">
             <button className=" rounded-md border px-12 py-2 hover:bg-red-300">
@@ -79,7 +79,7 @@ export default async function Page({ params }: IProps) {
         </div>
       </div>
       <div>
-        <h1 className=" my-3 text-xl font-bold">Other posts by this user</h1>
+        <h2 className=" my-3 text-xl font-bold">Other posts by this user</h2>
         <div className=" flex flex-row flex-wrap gap-6">
           {otherPostsRes?.slice(0, 3).map((post: any) => (
             <div className="flex flex-col gap-3" key={post._id}>
@@ -93,11 +93,11 @@ export default async function Page({ params }: IProps) {
                   />
                 </div>
 
-                <h2 className="">{post.post.title}</h2>
-                <h2 className="">{post.post.price}.00$</h2>
-                <h2 className="">
+                <h3 className="">{post.post.title}</h3>
+                <h3 className="">{post.post.price}.00$</h3>
+                <h3 className="">
                   {post.userInfo?.firstName} {post.userInfo?.lastName}{" "}
-                </h2>
+                </h3>
               </div>
             </div>
           ))}
