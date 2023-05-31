@@ -68,7 +68,41 @@ export async function getFilteredPosts(filters: { price: number, genreId: string
   } catch (error: any){
     return error.message
   }
+
 }
 
+export async function getUserProfile( createdBy: string){
+  try{
+    const response = await axios.get<{firstName: string, lastName: string, profileImageUrl: string}>(`${url1}/users/profile/${createdBy}`)
+    if (response.status !== 200, !response.data) {
+      throw new Error('Failed to fetch data')
+    }    
+    return response.data
+  } catch (error: any){
+    return error.message
+  }
+}
+export async function getAvilablePostsByUserId(createdBy: string){
+  try{
+    const response = await axios.get<{data : {post: PostType, userInfo: UserType}[]}>(`${url1}/posts/available/${createdBy}`)
+    if (response.status !== 200, !response.data) {
+      throw new Error('Failed to fetch data')
+    }    
+    return response.data
+  } catch (error: any){
+    return error.message
+  }
+}
+export async function getSoldPostsByUserId(createdBy: string){
+  try{
+    const response = await axios.get<{data : {post: PostType, userInfo: UserType}[]}>(`${url1}/posts/sold/${createdBy}`)
+    if (response.status !== 200, !response.data) {
+      throw new Error('Failed to fetch data')
+    }    
+    return response.data.data
+  } catch (error: any){
+    return error.message
+  }
+}
 
 

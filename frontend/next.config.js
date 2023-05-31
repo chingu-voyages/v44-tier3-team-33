@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "images1.vinted.net",
       },
+      {
+        protocol: "https",
+        hostname: "images.clerk.dev",
+      },
     ],
   },
 };
