@@ -24,7 +24,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
 export const getPostById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).populate("genres");
 
     if (!post?.createdBy || !post) {
       return res.status(404).json({ message: "Post not found" });
@@ -87,8 +87,10 @@ export const getAvailablePostsByUserId = async (
 ) => {
   const id = req.params.id;
   try {
-    const posts = await Post.find({ createdBy: id, status: "available" });
-    const postsWithUser = Promise.all(
+    const posts = await Post.find({ createdBy: id, status: "available" }).limit(
+      2
+    );
+    const postsWithUser = await Promise.all(
       posts.map(async (post) => {
         const user = await users.getUser(post.createdBy);
         return {
@@ -103,6 +105,7 @@ export const getAvailablePostsByUserId = async (
         };
       })
     );
+    console.log(postsWithUser);
     res.status(200).json(postsWithUser);
   } catch (error: any) {
     res.status(404).json({ message: error.message });

@@ -14,11 +14,13 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-8 "> 
-      <h1 className='font-bold text-3xl mt-0 mb-8'>Check out books posted by sellers</h1>
-      <Filter genres={genres} />
-      <p className="mb-8">Showing {posts.length} results</p>
-      <PostGrid posts={posts} /> 
+    <main className="mt-[70px] flex min-h-screen flex-col items-center justify-start  gap-5 px-2 py-3 text-black md:mt-0">
+      <div className="flex min-h-screen flex-col items-center justify-start p-4 md:p-8 ">
+        <h1 className="mb-8 mt-0 text-3xl font-bold">
+          Checkout books posted by sellers
+        </h1>
+        <PostGrid posts={posts} />
+      </div>
     </main>
   );
 }

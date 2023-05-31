@@ -11,7 +11,7 @@ const validateReq_1 = __importDefault(require("../middleware/validateReq"));
 const post_validate_1 = require("../validation/post.validate");
 const postRouter = express_1.default.Router();
 exports.postRouter = postRouter;
-postRouter.get("/:id", Post_controller_1.getPostsByUserId);
+postRouter.get("/:id", Post_controller_1.getAvailablePostsByUserId);
 postRouter.get("/post/:id", Post_controller_1.getPostById);
 postRouter.get("/", Post_controller_1.getAvailablePosts); // this is what should be used in the discover page
 postRouter.get("/available/:id", Post_controller_1.getAvailablePostsByUserId);
