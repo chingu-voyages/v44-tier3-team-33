@@ -1,21 +1,16 @@
 "use client";
 
 import { type BookConditionEnum, type BookGenreEnum } from "@/types/post.types";
-import {
-  MultiSelectBox,
-  MultiSelectBoxItem,
-  SelectBox,
-  SelectBoxItem,
-} from "@tremor/react";
+
 import { useState } from "react";
 import type {
   Control,
   FieldError,
   FieldErrorsImpl,
   Merge,
-  UseFormRegisterReturn,
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import Select from "react-select";
 
 export const FromSelect: React.FC<{
   values: string[] | typeof BookConditionEnum | typeof BookGenreEnum;
@@ -50,32 +45,23 @@ export const FromSelect: React.FC<{
         control={control}
         render={({ field }) =>
           multiple ? (
-            <MultiSelectBox
-              id={name}
-              placeholder={label}
-              {...field}
-              onValueChange={(value) => {
-                setSelectedValues(value);
-                field.onChange(value);
+            <Select
+              isMulti={multiple}
+              options={values.map((item) => ({ value: item, label: item }))}
+              className="w-full"
+              onChange={(newValues) => {
+                field.onChange(newValues.map((value) => value.value));
               }}
-            >
-              {values.map((value) => (
-                <MultiSelectBoxItem key={value} text={value} value={value} />
-              ))}
-            </MultiSelectBox>
+            />
           ) : (
-            <SelectBox
-              id={name}
-              placeholder={label}
-              {...field}
-              onValueChange={(value) => {
-                field.onChange(value);
+            <Select
+              isMulti={multiple}
+              options={values.map((item) => ({ value: item, label: item }))}
+              className="w-full"
+              onChange={(value) => {
+                field.onChange(value?.value);
               }}
-            >
-              {values.map((value) => (
-                <SelectBoxItem key={value} text={value} value={value} />
-              ))}
-            </SelectBox>
+            />
           )
         }
       />
