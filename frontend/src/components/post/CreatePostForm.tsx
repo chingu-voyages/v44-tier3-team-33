@@ -19,12 +19,24 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { generateMimeTypes } from "uploadthing/client";
 import { z } from "zod";
+import { ExpandedRouteConfig } from "uploadthing/server";
+import { useMutation } from "@tanstack/react-query";
 
 const { useUploadThing } = generateReactHelpers<BookUploadRouter>();
 
+const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
+  const fileTypes = config ? Object.keys(config) : [];
+
+  const maxFileCount = config
+    ? Object.values(config).map((v) => v.maxFileCount)
+    : [];
+
+  return { fileTypes, multiple: maxFileCount.some((v) => v && v > 1) };
+};
+
 const FormSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  author: z.string().min(1, { message: "Author is required" }),
+  title: z.string().min(1, { message: "Title is required" }).max(100),
+  author: z.string().min(1, { message: "Author is required" }).max(100),
   description: z
     .string()
     .min(5, { message: "short description min 5" })
@@ -47,13 +59,26 @@ type FormValuesType = z.infer<typeof FormSchema>;
 
 const CreatePostForm = () => {
   const [imagesURLs, setImagesURLs] = useState<string[]>([]);
+  const [formLoading, setFormLoading] = useState(false);
   const { getToken } = useAuth();
+
+  const deleteImage = useMutation(async (img: string) => {
+    try {
+      const res = await axios.delete(`/api/image/${img}`);
+
+      console.log(res.data);
+      return res.data;
+    } catch (e) {
+      console.log(e);
+    }
+  });
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm<FormValuesType>({
     resolver: zodResolver(FormSchema),
     defaultValues: defaultValues,
@@ -63,6 +88,7 @@ const CreatePostForm = () => {
     data: FormValuesType;
     imagesURLs: string[];
   }) => void = async ({ data, imagesURLs }) => {
+    setFormLoading(true);
     try {
       const validateImages = z.string().url().array().min(1).max(4);
       const validateImagesParsed = validateImages.safeParse(imagesURLs);
@@ -73,15 +99,20 @@ const CreatePostForm = () => {
         }
         return;
       }
-      // Fetch Backend
 
-       await axios.post(
+      const createPost = await axios.post(
         `${API}/posts/create`,
         { post: { ...data, imagesURLs: imagesURLs } },
         { headers: { Authorization: await getToken() } }
       );
-      console.log("Images: ", imagesURLs);
+      if (createPost.status === 200) {
+        setFormLoading(false);
+        reset();
+        setImagesURLs([]);
+        alert("Post created successfully");
+      }
     } catch (e) {
+      setFormLoading(false);
       console.log(e);
     }
   };
@@ -166,30 +197,18 @@ const CreatePostForm = () => {
                     className="h-[150px] w-[100px] object-scale-down  "
                   />
                   <div
-                    className="absolute right-0 top-0 m-0 flex cursor-pointer items-center justify-center rounded-full  bg-white px-2 py-1 text-center text-xs hover:bg-slate-950 hover:text-white "
+                    className="absolute right-0 top-0 m-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full  bg-red-600 px-2 py-1 text-center text-xs hover:bg-gray-500 hover:text-white "
                     onClick={async () => {
-                      try {
-                        // until they fix it
-                        // const res = await axios.post(
-                        //   `https://uploadthing.com/api/deleteFile`,
-                        //   {
-                        //     headers: {
-                        //       "x-uploadthing-api-key":
-                        //         process.env.UPLOADTHING_SECRET,
-                        //     },
-                        //     data: { files: [img.slice(26, img.length)] },
-                        //   }
-                        // );
-                        // console.log("Delete Response: ", res);
-                        let newImages = [...imagesURLs];
-                        newImages.splice(i, 1);
-                        setImagesURLs(newImages);
-                      } catch (e) {
-                        console.log(e);
-                      }
+                      deleteImage.mutate(img.slice(26, img.length), {
+                        onSuccess: () => {
+                          let newImages = [...imagesURLs];
+                          newImages.splice(i, 1);
+                          setImagesURLs(newImages);
+                        },
+                      });
                     }}
                   >
-                    x
+                    {deleteImage.isLoading ? <Spinner /> : "X"}
                   </div>
                   {imagesURLs.length > 4}
                 </div>
@@ -198,7 +217,12 @@ const CreatePostForm = () => {
           )}
         </div>
         <UploadPostButton setImages={setImagesURLs} images={imagesURLs} />
-        <PrimaryButton type="submit" label="Submit" />
+        <PrimaryButton
+          type="submit"
+          label="Submit"
+          isLoading={formLoading}
+          disabled={formLoading}
+        />
       </form>
     </div>
   );
@@ -225,8 +249,11 @@ const UploadPostButton: React.FC<{
     },
   });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { config } = permittedFileInfo ?? {};
 
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config
+  );
   return (
     <div className="flex w-full flex-col gap-2">
       <div className=" flex w-full flex-col items-center gap-2">
@@ -241,7 +268,7 @@ const UploadPostButton: React.FC<{
             type="file"
             multiple={true}
             max={4}
-            accept={generateMimeTypes(fileTypes ?? []).join(", ")}
+            accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
             disabled={isUploading}
             onChange={async (e) => {
               console.log(e.target.files);
@@ -265,7 +292,8 @@ const UploadPostButton: React.FC<{
           {fileTypes && (
             <p className="text-xs leading-5 text-gray-600">
               {`${fileTypes.join(", ")}`}{" "}
-              {maxSize && `up to ${maxSize}, ${images.length} Files Uploaded`}
+              {config?.image?.maxFileSize &&
+                `up to ${config?.image?.maxFileSize}, ${images.length} Files Uploaded`}
             </p>
           )}
         </div>
