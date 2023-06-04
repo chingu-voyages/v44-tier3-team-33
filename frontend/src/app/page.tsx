@@ -19,6 +19,7 @@ export default async function Home() {
         <h1 className="mb-8 mt-0 text-3xl font-bold">
           Checkout books posted by sellers
         </h1>
+        <Filter genres={genres} />
         <PostGrid posts={posts} />
       </div>
     </main>

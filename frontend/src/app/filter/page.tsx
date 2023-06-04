@@ -33,7 +33,7 @@ async function FilteredPostsPage() {
   }, [])
    
   return (
-    <>
+    <div className='flex flex-col items-center w-[90%]'>
       <Filter genres={genres} />
       {!posts.length ? 
         (<h3>No posts found for selected filters.</h3>) :
@@ -42,7 +42,7 @@ async function FilteredPostsPage() {
           <PostGrid posts={posts} />
         </>)
       }   
-    </>
+    </div>
   )
 }
 
