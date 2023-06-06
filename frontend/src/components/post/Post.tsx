@@ -5,6 +5,7 @@ import React from "react";
 import { AiOutlineHeart } from "react-icons/ai";
 
 import CartButton from "./CartButton";
+import Link from "next/link";
 
 function Post({
   postItem,
@@ -18,12 +19,14 @@ function Post({
   return (
     <div className="flex w-[250px] cursor-pointer flex-col items-center  justify-between rounded-xl border-2 border-gray-200 text-black md:w-[300px]">
       <div className=" relative h-56 w-40 rounded-md border border-t-fuchsia-950">
-        <Image
-          src={imgs?.[0]}
-          alt="product"
-          fill
-          sizes="(max-width: 500px) 100px, (max-width: 900px) 200px, (max-width: 1200px) 300px, "
-        />
+        <Link href={`/post/${postItem.post._id}`}>
+          <Image
+            src={imgs?.[0]}
+            alt="product"
+            fill
+            sizes="(max-width: 500px) 100px, (max-width: 900px) 200px, (max-width: 1200px) 300px, "
+          />
+        </Link>
       </div>
       <div className="flex flex-grow flex-col justify-between p-4">
         <div className="flex flex-grow justify-between  gap-8">

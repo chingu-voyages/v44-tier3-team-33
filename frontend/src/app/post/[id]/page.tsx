@@ -13,11 +13,11 @@ export default async function Page({ params }: IProps) {
   const data = await fetch(`http://localhost:3001/posts/post/${params.id}`);
 
   const res = await data.json();
-  console.log(res.data);
+
   const otherPosts = await fetch(
     `http://localhost:3001/posts/available/${res.data.post?.createdBy}`
   );
-  console.log(otherPosts)
+
   const otherPostsRes = await otherPosts.json().then((res) => res);
 
   return (

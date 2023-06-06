@@ -12,10 +12,8 @@ function PostGrid({
 }) {
   return (
     <div className="grid grid-cols-1 justify-center justify-items-center gap-8 md:grid-cols-2 xl:grid-cols-3 py-8">
-      {posts.map((postItem) => (
-        <Link href={`/post/${postItem.post._id}`} key={postItem.post._id}>
-          <Post key={postItem.post._id} postItem={postItem} />
-        </Link>
+      {posts.map((postItem) => (        
+        <Post key={postItem.post._id} postItem={postItem} />       
       ))}
     </div>
   );
