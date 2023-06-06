@@ -51,13 +51,14 @@ function Profile({ profile, availablePosts, soldPosts, userId}: ProfileProps) {
       <div className='mb-4'>
         <Image src={profileImageUrl} className='rounded-full mx-auto' alt="avatar" width={250} height={250} />
       </div>      
-      
+      { user &&  
+        <button className='inline-flex gap-4 justify-center items-center text-gray-500' onClick={() => setIsEditing(true)}>
+          <span>Edit name</span><BiEditAlt size={20} />
+        </button> 
+      }
       <div>
         { user && isEditing ? 
-          <>
-            <button className='inline-flex gap-4 justify-center items-center text-gray-500' onClick={() => setIsEditing(true)}>
-            <span>Edit name</span><BiEditAlt size={20} />
-            </button>
+          <>           
             <form className="flex flex-col gap-4 md:flex-row my-8 justify-center">
               <input className="border-2 border-gray-200 p-2 rounded-lg" type="text" value={firstName} name="firstName" onChange={handleChange} /> 
               <input className="border-2 border-gray-200 p-2 rounded-lg" type="text" value={lastName} name="lastName" onChange={handleChange} />

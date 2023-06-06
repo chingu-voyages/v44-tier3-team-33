@@ -52,9 +52,9 @@ function NavbarClient() {
                 <span className=" font-bold">Logo</span>
               </NavLink>
               <NavLink href="/">Discover</NavLink>
-              <NavLink href="">Category</NavLink>
               {userId ? (
                 <>
+                  <NavLink href="/user">Profile</NavLink>
                   <NavLink href="">Saved</NavLink>
                   <NavLink href="/post">Sell Now</NavLink>
                 </>

@@ -67,7 +67,7 @@ export default async function Page({ params }: IProps) {
           <div>
             <h3>
               <span className=" font-bold">Posted By: </span>
-              <Link href={`/seller/${res.data.post?.createdBy}`}>{res.data.userInfo?.firstName} {res.data.userInfo?.lastName}</Link>
+              <Link className="border-b-2 border-gray-400 focus:opacity-50 hover:opacity-50" href={`/seller/${res.data.post?.createdBy}`}>{res.data.userInfo?.firstName ? res.data.userInfo?.firstName : "User" } {res.data.userInfo?.lastName}</Link>
             </h3>
           </div>
           <div className="mt-10">
