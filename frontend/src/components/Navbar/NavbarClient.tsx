@@ -1,6 +1,7 @@
 "use client";
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import { useAuth } from "@clerk/nextjs";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -25,10 +26,10 @@ function NavbarClient() {
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="flex w-full  items-center justify-between px-8 py-4 ">
+      <div className="flex w-full  items-center justify-between px-8 md:px-4 py-4 ">
         <div className="md:hidden">
           <NavLink href="">
-            <span className=" font-bold">Logo</span>
+            <Image src="/assets/logo.png" width={70} height={50} alt="logo" />
           </NavLink>
         </div>
         <div
@@ -49,7 +50,9 @@ function NavbarClient() {
           >
             <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
               <NavLink href="" className=" hidden md:flex">
-                <span className=" font-bold">Logo</span>
+                <div className="w-[50px] lg:w-[100px]">
+                  <Image src="/assets/logo.png" width={100} height={50} alt="logo" />
+                </div>
               </NavLink>
               <NavLink href="/">Discover</NavLink>
               {userId ? (
