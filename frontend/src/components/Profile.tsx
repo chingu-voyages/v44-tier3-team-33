@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { BiEditAlt } from "react-icons/bi";
+import { BiErrorCircle } from "react-icons/bi";
 import { HiDocumentAdd } from "react-icons/hi";
 
 import Post from "./post/Post";
@@ -28,6 +29,7 @@ function Profile({ profile, availablePosts, soldPosts, userId }: ProfileProps) {
     lastName: "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState("");
 
   const { firstName, lastName, profileImageUrl } = profile;
   const { user } = useUser();
@@ -45,7 +47,6 @@ function Profile({ profile, availablePosts, soldPosts, userId }: ProfileProps) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
     setUserInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
-    console.log(userInfo);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -54,7 +55,13 @@ function Profile({ profile, availablePosts, soldPosts, userId }: ProfileProps) {
       await updateUser();
     } catch (error: any) {
       console.log(error);
+      setError("Could not update information");
     }
+    setUserInfo({ firstName: "", lastName: "" });
+    setIsEditing(false);
+    setTimeout(() => {
+      setError("");
+    }, 1500);
   }
 
   return (
@@ -78,6 +85,11 @@ function Profile({ profile, availablePosts, soldPosts, userId }: ProfileProps) {
         </button>
       )}
       <div>
+        {error && (
+          <p className="my-4 flex items-center justify-center gap-4 rounded-lg bg-red-200 p-2 text-red-800">
+            <BiErrorCircle size={20} /> {error}
+          </p>
+        )}
         {user && isEditing ? (
           <>
             <form
