@@ -1,7 +1,6 @@
 "use client";
 
 import CartItem from "@/components/cart/CartItem";
-import getQueryClient from "@/components/utils/query/getQueryClient";
 import { getCart } from "@/utils/fetchData";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
@@ -40,7 +39,7 @@ const Cart = async () => {
   }
 
   return (
-    <div className="flex w-10/12 flex-col gap-2 text-black">
+    <div className="flex w-10/12 flex-col justify-center items-center gap-2 text-black">
       <div>
         <h2 className="text-3xl">Your Cart</h2>
         <hr className="w-full" />
