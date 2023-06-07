@@ -24,7 +24,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <Providers>
             <Navbar />
-            <main className="mt-[70px] flex justify-center items-center flex-col min-h-screen px-2 py-3 text-black md:mt-0">
+            <main className="mt-[70px] flex items-center flex-col min-h-screen px-2 py-3 text-black md:mt-0">
               {children}
             </main>
             <Modal />
