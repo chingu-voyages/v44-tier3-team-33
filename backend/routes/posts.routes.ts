@@ -15,7 +15,8 @@ import {
   updatePostStatus,
   addPostToFavorites,
   getPostsByFilters,
-  getPostsBySearch
+  getPostsBySearch,
+  buyPosts,
 } from "../controllers/Post.controller";
 import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
 
@@ -23,7 +24,7 @@ import validateReq from "../middleware/validateReq";
 import { createPostSchema } from "../validation/post.validate";
 const postRouter = express.Router();
 
-postRouter.post("/buy")
+postRouter.post("/buy", ClerkExpressWithAuth(), buyPosts);
 postRouter.post("/filters", getPostsByFilters);
 postRouter.get("/:searchQuery", getPostsBySearch);
 postRouter.get("/user/:id", getPostsByUserId);

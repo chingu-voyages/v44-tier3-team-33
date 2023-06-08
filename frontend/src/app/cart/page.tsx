@@ -26,7 +26,7 @@ const Cart = async () => {
   );
   const buyPosts = useMutation(async () => {
     const res = await axios.post(
-      `$http://localhost:3001/posts/buy`,
+      `http://localhost:3001/posts/buy`,
       {postsIds: cart?.posts.map((item) => item.post._id)},
       { headers: { authorization: `Bearer ${await getToken()}` } }
     );
@@ -75,7 +75,7 @@ const Cart = async () => {
         </div>
         <h6 className="text-right">
           Total ({cart.posts.length} items) :{" "}
-          <span className="font-bold">{cart.totalPrice.toFixed(2)}$</span>
+          <span className="font-bold">{cart.posts.reduce((value, b) => value + b.post.price,0).toFixed(2)}$</span>
         </h6>
       </div>
     </div>

@@ -6,12 +6,13 @@ import mongoose from "mongoose";
 
 import { CreatePostType } from "../validation/post.validate";
 import { getPostsWithUser, getPostWithUser } from "../utils/utils";
-import { PostType } from "../types/post.types";
+import { BookStatusEnum, PostType } from "../types/post.types";
+import { Cart } from "../models/Cart.models";
 
 //get all posts
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = (await Post.find()) as PostType[];
+    const posts = (await Post.find({ status: "available" })) as PostType[];
     const postsWithUser = await getPostsWithUser({ posts: posts });
     console.log(posts);
     res.status(200).json({ data: postsWithUser });
@@ -48,15 +49,31 @@ export const getPostById = async (req: Request, res: Response) => {
   }
 };
 
-export const BuyPosts = async (req: Request, res: Response) => {
+export const buyPosts = async (req: Request, res: Response) => {
   const postsIds = req.body.postsIds as string[];
+  console.log(postsIds);
 
   const userId = req.auth.userId;
   try {
     const posts = await Post.updateMany(
       { _id: { $in: postsIds } },
-      { status: "available", boughtBy: userId }
+      { status: BookStatusEnum[1], boughtBy: userId }
     );
+    console.log(posts);
+    const cart = await Cart.findOne({ userId: userId });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    const newCartPosts = cart.posts.filter((post) => {
+      return !postsIds.includes(post.toString());
+    });
+
+    cart.posts = newCartPosts;
+    await cart.save();
+
+    console.log(cart);
     return res.status(200).json({
       message: "success",
     });
