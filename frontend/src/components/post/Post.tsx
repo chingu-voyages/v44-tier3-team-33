@@ -65,9 +65,9 @@ function Post({
           />
         </Link>
       </div>
-      <div className="flex flex-grow flex-col justify-between p-4">
-        <div className="flex flex-grow justify-between  gap-8">
-          <h3 className="mb-2 text-lg font-bold md:text-xl ">{title}</h3>
+      <div className="flex  w-full flex-col justify-between p-4">
+        <div className="flex w-full justify-between  gap-8">
+          <h2 className="mb-2 truncate text-lg font-bold">{title}</h2>
           <span className="text-lg font-light">${price}</span>
         </div>
         <p className="overflow-hidden text-black">
