@@ -7,15 +7,16 @@ This is a simple web application that allows users to search for secondhand book
 # Built With
 
 - Frontend
-  - Next.js
-  - Clerk
-  - Tailwind CSS
+  - [Next.js](https://github.com/vercel/next.js) - React framework
+  - [Clerk](https://github.com/clerkinc/javascript) - For auth
+  - [UploadThing](https://github.com/pingdotgg/uploadthing) - For uploading files
+  - [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) - For styling
 - Backend
   - Node.js
   - Express
   - MongoDB
   - TypeScript
-  - Clerk
+  - [Clerk](https://github.com/clerkinc/javascript) - For auth
 
 # Get Started
 
