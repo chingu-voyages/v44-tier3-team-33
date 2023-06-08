@@ -1,4 +1,4 @@
-import { getPosts, getGenres } from '@/utils/utils'
+import { getPosts, getGenres } from '@/utils/fetchData';
 import PostGrid from '@/components/post/PostGrid';
 import Filter from '@/components/filters/Filters';
 
