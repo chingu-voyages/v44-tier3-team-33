@@ -68,7 +68,6 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
 // get posts that are available
 export const getAvailablePosts = async (req: Request, res: Response) => {
   try {
-
     const posts = (await Post.find({ status: "available" })) as PostType[];
 
     const postsWithUser = await getPostsWithUser({ posts: posts });
@@ -183,15 +182,14 @@ export const getPostsByPrice = async (req: Request, res: Response) => {
 };
 
 export const getPostsByFilters = async (req: Request, res: Response) => {
-  const filters = req.body.filters
-  console.log(req.body)
-  
+  const filters = req.body.filters;
+
   try {
-    const posts = await Post.find({
+    const posts = (await Post.find({
       price: { $lte: filters.price },
-      genres: filters.genreId ,
+      genres: filters.genreId,
       status: "available",
-    }) as PostType[]
+    })) as PostType[];
     const postsWithUser = await getPostsWithUser({ posts: posts });
 
     res.status(200).json({ data: postsWithUser });
@@ -199,8 +197,6 @@ export const getPostsByFilters = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message });
   }
 };
-
-
 
 //create post
 
@@ -325,28 +321,65 @@ export const addPostToFavorites = async (req: Request, res: Response) => {
       return res.status(404).send(`No post with id: ${id}`);
 
     const user = await users.getUser(userId);
-
+    const post = (await Post.findById(id)) as PostType;
+    if (!post?.createdBy || !post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
 
     // check if favourites private metadata exists
     if (!user.privateMetadata.favourites) {
       await users.updateUser(userId, {
         privateMetadata: {
-          favourites: [id.toString()],
+          favourites: [],
         },
       });
 
       return res.status(200).json({ message: "Post added to favourites" });
     } else {
-      const favourites = user.privateMetadata.favourites as string[];
-      favourites.push(id.toString());
-      await users.updateUser(userId, {
-        privateMetadata: {
-          favourites: favourites,
-        },
-      });
+      const favourites = user.privateMetadata.favourites as PostType[];
+      const existingIndex = favourites.findIndex((f) => f._id === id);
 
-      return res.status(200).json({ message: "Post added to favourites" });
+      if (existingIndex === -1) {
+        favourites.push(post);
+        await users.updateUser(userId, {
+          privateMetadata: {
+            favourites: favourites,
+          },
+        });
+        return res.status(200).json({
+          message: "Post added to favourites",
+          favourites: favourites,
+        });
+      } else if (existingIndex !== -1) {
+        favourites.splice(existingIndex, 1);
+        await users.updateUser(userId, {
+          privateMetadata: {
+            favourites: favourites,
+          },
+        });
+        return res.status(200).json({
+          message: "Removed from Favourites",
+          favourites: favourites,
+        });
+      }
     }
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const getFavouritesPosts = async (req: Request, res: Response) => {
+  const { userId } = req.body;
+  try {
+    const user = await users.getUser(userId);
+    const posts = user.privateMetadata.favourites as PostType[];
+
+    if (!posts.length || !user.privateMetadata.favourites) {
+      return res.status(404).json({ message: "No favourites added" });
+    }
+    const postsWithUser = await getPostsWithUser({ posts: posts });
+
+    return res.status(200).json({ data: postsWithUser });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }
@@ -382,19 +415,19 @@ export const deletePost = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getPostsBySearch = async (req: Request, res: Response) => {
   const { searchQuery } = req.params;
-  console.log(searchQuery);
-  
+
   try {
-    const posts = await Post.find({ title: { $regex: searchQuery, $options: "i"}, status: "available"}) as PostType[]
+    const posts = (await Post.find({
+      title: { $regex: searchQuery, $options: "i" },
+      status: "available",
+    })) as PostType[];
     const postsWithUser = await getPostsWithUser({ posts: posts });
 
     res.status(200).json({ data: postsWithUser });
-   
-  } catch (error: any){
-    console.log(error)
-    res.status(404).json({ message: error.message })
+  } catch (error: any) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
   }
-}
+};
