@@ -1,6 +1,7 @@
 import { PostType } from "@/types/post.types";
 import { API } from "@/utils/fetchData";
 import Image from "next/image";
+import Link from "next/link";
 
 interface IProps {
   params: {
@@ -13,11 +14,11 @@ export default async function Page({ params }: IProps) {
   const data = await fetch(`${API}/posts/post/${params.id}`);
 
   const res = await data.json();
-  console.log(res.data);
+
   const otherPosts = await fetch(
     `http://localhost:3001/posts/available/${res.data.post?.createdBy}`
   );
-  console.log(otherPosts)
+
   const otherPostsRes = await otherPosts.json().then((res) => res);
 
   return (
@@ -67,7 +68,7 @@ export default async function Page({ params }: IProps) {
           <div>
             <h3>
               <span className=" font-bold">Posted By: </span>
-              {res.data.userInfo?.firstName} {res.data.userInfo?.lastName}
+              <Link className="border-b-2 border-gray-400 focus:opacity-50 hover:opacity-50" href={`/seller/${res.data.post?.createdBy}`}>{res.data.userInfo?.firstName ? res.data.userInfo?.firstName : "User" } {res.data.userInfo?.lastName}</Link>
             </h3>
           </div>
           <div className="mt-10">
