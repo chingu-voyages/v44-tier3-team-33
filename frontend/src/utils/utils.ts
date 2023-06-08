@@ -15,7 +15,7 @@ export async function getPosts() {
       // This will activate the closest `error.js` Error Boundary
       throw new Error("Failed to fetch data");
     }
-    return response.data.data;
+    console.log(response.data.data);
     return response.data.data;
   } catch (error: any) {
     console.log(error);
@@ -149,9 +149,27 @@ export async function addToFavorites(
     if (response.status !== 200) {
       throw new Error("Failed to add to favorites");
     }
-    console.log(response);
-    // return response.data;
+    console.log(response.data);
   } catch (error: any) {
-    console.log(error);
+    console.log(error.message);
+  }
+}
+
+export async function getFavouritePosts(userId: string, token: string) {
+  try {
+    const response = await axios.put<{
+      data: { post: PostType; userInfo: UserType }[];
+    }>(
+      `${url1}/posts/favorites`,
+      { userId: userId },
+      { headers: { Authorization: token } }
+    );
+    if ((response.status !== 200, !response.data)) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    return error.message;
   }
 }

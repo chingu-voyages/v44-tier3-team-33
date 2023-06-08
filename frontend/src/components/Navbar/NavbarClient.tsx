@@ -1,4 +1,5 @@
 "use client";
+
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
@@ -12,7 +13,7 @@ function NavbarClient() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { userId } = useAuth();
-  const router = useRouter()
+  const router = useRouter();
 
   function toggleNav() {
     setIsOpen((prevOpen) => !prevOpen);
@@ -20,13 +21,13 @@ function NavbarClient() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    router.push(`/search/${searchQuery}`)
-    setSearchQuery("")
+    router.push(`/search/${searchQuery}`);
+    setSearchQuery("");
   }
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="flex w-full  items-center justify-between px-8 md:px-4 py-4 ">
+      <div className="flex w-full  items-center justify-between px-8 py-4 md:px-4 ">
         <div className="md:hidden">
           <NavLink href="">
             <Image src="/assets/logo.png" width={70} height={50} alt="logo" />
@@ -51,14 +52,19 @@ function NavbarClient() {
             <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
               <NavLink href="" className=" hidden md:flex">
                 <div className="w-[50px] lg:w-[100px]">
-                  <Image src="/assets/logo.png" width={100} height={50} alt="logo" />
+                  <Image
+                    src="/assets/logo.png"
+                    width={100}
+                    height={50}
+                    alt="logo"
+                  />
                 </div>
               </NavLink>
               <NavLink href="/">Discover</NavLink>
               {userId ? (
                 <>
                   <NavLink href="/user">Profile</NavLink>
-                  <NavLink href="">Saved</NavLink>
+                  <NavLink href="/saved">Saved</NavLink>
                   <NavLink href="/post">Sell Now</NavLink>
                 </>
               ) : (
@@ -105,7 +111,7 @@ function NavbarClient() {
           value={searchQuery}
           placeholder="Search for a book"
           className=" flex  w-full border-2 border-gray-300 p-2  xs:border-x-0 xs:pl-8 md:static md:hidden md:w-48 md:rounded-lg md:border-x-2 md:pl-4 lg:w-80"
-        /> 
+        />
       </form>
     </div>
   );

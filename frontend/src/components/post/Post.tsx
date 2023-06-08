@@ -28,6 +28,7 @@ function Post({
     const token = await getToken();
     if (userId && token) {
       await addToFavorites(post._id, userId, token);
+      console.log(user);
     }
   }
 
