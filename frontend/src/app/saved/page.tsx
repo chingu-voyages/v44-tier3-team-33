@@ -18,7 +18,7 @@ function Saved() {
       }
     }
     getPosts();
-  }, []);
+  }, [getToken, userId]);
 
   if (!userId)
     return (
@@ -31,10 +31,12 @@ function Saved() {
     return <p className="text-center">No favourites added yet!</p>;
 
   return (
-    <>
-      <h1 className="text-center text-xl font-bold">Your Saved posts</h1>
+    <div className="md:mt-8">
+      <h1 className="text-center text-xl font-bold md:text-3xl">
+        Your Saved posts
+      </h1>
       <PostGrid posts={posts} />
-    </>
+    </div>
   );
 }
 

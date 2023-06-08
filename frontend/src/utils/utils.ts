@@ -139,7 +139,10 @@ export async function addToFavorites(
 ) {
   try {
     console.log("Add to favorites");
-    const response = await axios.post(
+    const response = await axios.post<{
+      message: string;
+      favourites: PostType[];
+    }>(
       `${url1}/posts/addFavorites/${id}`,
       {
         userId: userId,
@@ -150,6 +153,7 @@ export async function addToFavorites(
       throw new Error("Failed to add to favorites");
     }
     console.log(response.data);
+    return response.data;
   } catch (error: any) {
     console.log(error.message);
   }

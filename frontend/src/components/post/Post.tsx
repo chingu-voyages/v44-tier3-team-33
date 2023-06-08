@@ -7,8 +7,9 @@ import { useUser } from "@clerk/clerk-react";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import { AiOutlineHeart } from "react-icons/ai";
+import React, { useState } from "react";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { set } from "zod";
 
 import CartButton from "./CartButton";
 
@@ -22,14 +23,34 @@ function Post({
   const { title, imgs, price } = post;
   const { userId, getToken } = useAuth();
 
-  const { user } = useUser();
+  const storedFavourites = localStorage.getItem("favourites");
+  const [favourites, setFavourites] = useState<PostType[]>(
+    storedFavourites ? JSON.parse(storedFavourites) : []
+  );
 
   async function addFavorites() {
     const token = await getToken();
+    if (!token || !userId) return;
     if (userId && token) {
-      await addToFavorites(post._id, userId, token);
-      console.log(user);
+      const { favourites } = (await addToFavorites(
+        post._id,
+        userId,
+        token
+      )) as { favourites: PostType[] };
+      setFavourites(favourites);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("favourites", JSON.stringify(favourites));
+      }
     }
+  }
+
+  function heartIcon() {
+    const existingIndex = favourites.findIndex((f) => f._id === post._id);
+    return existingIndex !== -1 ? (
+      <AiFillHeart className="text-red-600" />
+    ) : (
+      <AiOutlineHeart className="text-red-600" />
+    );
   }
 
   return (
@@ -60,7 +81,7 @@ function Post({
             onClick={addFavorites}
             className="flex w-full items-center justify-center border-2  border-r-0  border-gray-300 px-8 py-2 text-2xl"
           >
-            <AiOutlineHeart />
+            {heartIcon()}
           </button>
           <div className="flex w-full items-center justify-center border-2 border-gray-300  text-2xl ">
             <CartButton postId={post._id} />
