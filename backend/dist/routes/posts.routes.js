@@ -28,5 +28,6 @@ postRouter.post("/create", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), (0, val
 postRouter.put("/update/:id", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.updatePost);
 postRouter.put("/updateStatus/:id", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.updatePostStatus);
 postRouter.delete("/delete/:id", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.deletePost);
-postRouter.put("/addFavorites/:id", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.addPostToFavorites);
+postRouter.post("/addFavorites/:id", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.addPostToFavorites);
+postRouter.put("/favorites", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.getFavouritesPosts);
 //# sourceMappingURL=posts.routes.js.map
