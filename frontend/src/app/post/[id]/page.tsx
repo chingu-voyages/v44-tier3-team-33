@@ -1,4 +1,5 @@
 import { PostType } from "@/types/post.types";
+import { API } from "@/utils/fetchData";
 import Image from "next/image";
 
 interface IProps {
@@ -9,7 +10,7 @@ interface IProps {
 }
 
 export default async function Page({ params }: IProps) {
-  const data = await fetch(`http://localhost:3001/posts/post/${params.id}`);
+  const data = await fetch(`${API}/posts/post/${params.id}`);
 
   const res = await data.json();
   console.log(res.data);

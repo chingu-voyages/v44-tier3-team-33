@@ -11,7 +11,7 @@ const validateReq_1 = __importDefault(require("../middleware/validateReq"));
 const post_validate_1 = require("../validation/post.validate");
 const postRouter = express_1.default.Router();
 exports.postRouter = postRouter;
-postRouter.post("/buy");
+postRouter.post("/buy", (0, clerk_sdk_node_1.ClerkExpressWithAuth)(), Post_controller_1.buyPosts);
 postRouter.post("/filters", Post_controller_1.getPostsByFilters);
 postRouter.get("/:searchQuery", Post_controller_1.getPostsBySearch);
 postRouter.get("/user/:id", Post_controller_1.getPostsByUserId);

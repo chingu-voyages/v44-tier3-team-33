@@ -3,16 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostsBySearch = exports.deletePost = exports.addPostToFavorites = exports.updatePostStatus = exports.updatePost = exports.createPost = exports.getPostsByFilters = exports.getPostsByPrice = exports.getPostsByGenre = exports.getSoldPostsByUserId = exports.getAvailablePostByUser = exports.getAvailablePostsByUserId = exports.getAvailablePosts = exports.getPostsByUserId = exports.BuyPosts = exports.getPostById = exports.getAllPosts = void 0;
+exports.getPostsBySearch = exports.deletePost = exports.addPostToFavorites = exports.updatePostStatus = exports.updatePost = exports.createPost = exports.getPostsByFilters = exports.getPostsByPrice = exports.getPostsByGenre = exports.getSoldPostsByUserId = exports.getAvailablePostByUser = exports.getAvailablePostsByUserId = exports.getAvailablePosts = exports.getPostsByUserId = exports.buyPosts = exports.getPostById = exports.getAllPosts = void 0;
 const Post_model_1 = require("../models/Post.model");
 const Genre_model_1 = require("../models/Genre.model");
 const clerk_sdk_node_1 = require("@clerk/clerk-sdk-node");
 const mongoose_1 = __importDefault(require("mongoose"));
 const utils_1 = require("../utils/utils");
+const post_types_1 = require("../types/post.types");
+const Cart_models_1 = require("../models/Cart.models");
 //get all posts
 const getAllPosts = async (req, res) => {
     try {
-        const posts = (await Post_model_1.Post.find());
+        const posts = (await Post_model_1.Post.find({ status: "available" }));
         const postsWithUser = await (0, utils_1.getPostsWithUser)({ posts: posts });
         console.log(posts);
         res.status(200).json({ data: postsWithUser });
@@ -49,10 +51,23 @@ const getPostById = async (req, res) => {
     }
 };
 exports.getPostById = getPostById;
-const BuyPosts = async (req, res) => {
+const buyPosts = async (req, res) => {
     const postsIds = req.body.postsIds;
+    console.log(postsIds);
+    const userId = req.auth.userId;
     try {
-        const posts = await Post_model_1.Post.updateMany({ _id: { $in: postsIds } }, { status: "available" });
+        const posts = await Post_model_1.Post.updateMany({ _id: { $in: postsIds } }, { status: post_types_1.BookStatusEnum[1], boughtBy: userId });
+        console.log(posts);
+        const cart = await Cart_models_1.Cart.findOne({ userId: userId });
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+        const newCartPosts = cart.posts.filter((post) => {
+            return !postsIds.includes(post.toString());
+        });
+        cart.posts = newCartPosts;
+        await cart.save();
+        console.log(cart);
         return res.status(200).json({
             message: "success",
         });
@@ -61,7 +76,7 @@ const BuyPosts = async (req, res) => {
         return res.status(404).json({ message: error.message });
     }
 };
-exports.BuyPosts = BuyPosts;
+exports.buyPosts = buyPosts;
 // get posts by user id
 const getPostsByUserId = async (req, res) => {
     const id = req.params.id;

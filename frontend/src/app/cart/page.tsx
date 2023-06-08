@@ -26,7 +26,7 @@ const Cart = async () => {
   );
   const buyPosts = useMutation(async () => {
     const res = await axios.post(
-      `http://localhost:3001/posts/buy`,
+      `${API}/posts/buy`,
       {postsIds: cart?.posts.map((item) => item.post._id)},
       { headers: { authorization: `Bearer ${await getToken()}` } }
     );
