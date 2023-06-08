@@ -23,6 +23,7 @@ import validateReq from "../middleware/validateReq";
 import { createPostSchema } from "../validation/post.validate";
 const postRouter = express.Router();
 
+postRouter.post("/buy")
 postRouter.post("/filters", getPostsByFilters);
 postRouter.get("/:searchQuery", getPostsBySearch);
 postRouter.get("/user/:id", getPostsByUserId);

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePost = exports.addPostToFavorites = exports.updatePostStatus = exports.updatePost = exports.createPost = exports.getPostsByPrice = exports.getPostsByGenre = exports.getSoldPostsByUserId = exports.getAvailablePostByUser = exports.getAvailablePostsByUserId = exports.getAvailablePosts = exports.getPostsByUserId = exports.getPostById = exports.getAllPosts = void 0;
+exports.getPostsBySearch = exports.deletePost = exports.addPostToFavorites = exports.updatePostStatus = exports.updatePost = exports.createPost = exports.getPostsByFilters = exports.getPostsByPrice = exports.getPostsByGenre = exports.getSoldPostsByUserId = exports.getAvailablePostByUser = exports.getAvailablePostsByUserId = exports.getAvailablePosts = exports.getPostsByUserId = exports.BuyPosts = exports.getPostById = exports.getAllPosts = void 0;
 const Post_model_1 = require("../models/Post.model");
 const Genre_model_1 = require("../models/Genre.model");
 const clerk_sdk_node_1 = require("@clerk/clerk-sdk-node");
@@ -26,7 +26,7 @@ exports.getAllPosts = getAllPosts;
 const getPostById = async (req, res) => {
     const id = req.params.id;
     try {
-        const post = await Post_model_1.Post.findById(id);
+        const post = await Post_model_1.Post.findById(id).populate("genres");
         if (!post?.createdBy || !post) {
             return res.status(404).json({ message: "Post not found" });
         }
@@ -49,6 +49,19 @@ const getPostById = async (req, res) => {
     }
 };
 exports.getPostById = getPostById;
+const BuyPosts = async (req, res) => {
+    const postsIds = req.body.postsIds;
+    try {
+        const posts = await Post_model_1.Post.updateMany({ _id: { $in: postsIds } }, { status: "available" });
+        return res.status(200).json({
+            message: "success",
+        });
+    }
+    catch (error) {
+        return res.status(404).json({ message: error.message });
+    }
+};
+exports.BuyPosts = BuyPosts;
 // get posts by user id
 const getPostsByUserId = async (req, res) => {
     const id = req.params.id;
@@ -65,7 +78,7 @@ const getPostsByUserId = async (req, res) => {
     }
 };
 exports.getPostsByUserId = getPostsByUserId;
-// get posts that are available and populate user
+// get posts that are available
 const getAvailablePosts = async (req, res) => {
     try {
         const posts = (await Post_model_1.Post.find({ status: "available" }));
@@ -82,7 +95,7 @@ exports.getAvailablePosts = getAvailablePosts;
 const getAvailablePostsByUserId = async (req, res) => {
     const id = req.params.id;
     try {
-        const posts = await Post_model_1.Post.find({ createdBy: id, status: "available" }).limit(3);
+        const posts = await Post_model_1.Post.find({ createdBy: id, status: "available" }).limit(2);
         const postsWithUser = await Promise.all(posts.map(async (post) => {
             const user = await clerk_sdk_node_1.users.getUser(post.createdBy);
             return {
@@ -170,6 +183,23 @@ const getPostsByPrice = async (req, res) => {
     }
 };
 exports.getPostsByPrice = getPostsByPrice;
+const getPostsByFilters = async (req, res) => {
+    const filters = req.body.filters;
+    console.log(req.body);
+    try {
+        const posts = (await Post_model_1.Post.find({
+            price: { $lte: filters.price },
+            genres: filters.genreId,
+            status: "available",
+        }));
+        const postsWithUser = await (0, utils_1.getPostsWithUser)({ posts: posts });
+        res.status(200).json({ data: postsWithUser });
+    }
+    catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+exports.getPostsByFilters = getPostsByFilters;
 //create post
 const createPost = async (req, res) => {
     const { body: { post }, } = req;
@@ -268,11 +298,10 @@ exports.updatePostStatus = updatePostStatus;
 const addPostToFavorites = async (req, res) => {
     const id = req.params.id;
     const { userId } = req.body;
-    const user = await clerk_sdk_node_1.users.getUser(userId);
     try {
-        // check if post exists
         if (!mongoose_1.default.Types.ObjectId.isValid(id))
             return res.status(404).send(`No post with id: ${id}`);
+        const user = await clerk_sdk_node_1.users.getUser(userId);
         // check if favourites private metadata exists
         if (!user.privateMetadata.favourites) {
             await clerk_sdk_node_1.users.updateUser(userId, {
@@ -325,4 +354,21 @@ const deletePost = async (req, res) => {
     }
 };
 exports.deletePost = deletePost;
+const getPostsBySearch = async (req, res) => {
+    const { searchQuery } = req.params;
+    console.log(searchQuery);
+    try {
+        const posts = (await Post_model_1.Post.find({
+            title: { $regex: searchQuery, $options: "i" },
+            status: "available",
+        }));
+        const postsWithUser = await (0, utils_1.getPostsWithUser)({ posts: posts });
+        res.status(200).json({ data: postsWithUser });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(404).json({ message: error.message });
+    }
+};
+exports.getPostsBySearch = getPostsBySearch;
 //# sourceMappingURL=Post.controller.js.map

@@ -53,6 +53,12 @@ export const PostSchema = new Schema({
     default: BookStatusEnum[0],
     indexedDB: true,
   },
+  boughtBy: {
+    type: String,
+    required: false,
+    indexedDB: true,
+    default: "",
+  },
 });
 
 export const Post = mongoose.model("Post", PostSchema);

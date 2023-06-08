@@ -1,9 +1,11 @@
 "use client";
 
 import CartItem from "@/components/cart/CartItem";
-import { getCart } from "@/utils/fetchData";
+import { PrimaryButton } from "@/components/utils/utils";
+import { API, getCart } from "@/utils/fetchData";
 import { useAuth } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { CgShoppingCart } from "react-icons/cg";
 
 const Cart = async () => {
@@ -22,6 +24,16 @@ const Cart = async () => {
       },
     }
   );
+  const buyPosts = useMutation(async () => {
+    const res = await axios.post(
+      `$http://localhost:3001/posts/buy`,
+      {postsIds: cart?.posts.map((item) => item.post._id)},
+      { headers: { authorization: `Bearer ${await getToken()}` } }
+    );
+    return res.data
+  },{onSuccess: (data) => {
+    console.log(data);
+      refetch()}});
 
   if (isLoading) {
     <h1>Loading...</h1>;
@@ -55,7 +67,12 @@ const Cart = async () => {
           />
         ))}
       </div>
-      <div className="w-full p-4">
+      <div className="w-full flex flex-row-reverse justify-start items-center gap-3 p-4">
+        <div>
+          <PrimaryButton label="Checkout" onClick={()=>{
+            buyPosts.mutate()
+          }}  />
+        </div>
         <h6 className="text-right">
           Total ({cart.posts.length} items) :{" "}
           <span className="font-bold">{cart.totalPrice.toFixed(2)}$</span>

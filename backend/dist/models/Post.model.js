@@ -57,6 +57,12 @@ exports.PostSchema = new Schema({
         default: post_types_1.BookStatusEnum[0],
         indexedDB: true,
     },
+    boughtBy: {
+        type: String,
+        required: false,
+        indexedDB: true,
+        default: "",
+    },
 });
 exports.Post = mongoose_1.default.model("Post", exports.PostSchema);
 //# sourceMappingURL=Post.model.js.map

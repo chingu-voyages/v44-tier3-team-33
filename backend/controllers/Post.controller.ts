@@ -48,6 +48,23 @@ export const getPostById = async (req: Request, res: Response) => {
   }
 };
 
+export const BuyPosts = async (req: Request, res: Response) => {
+  const postsIds = req.body.postsIds as string[];
+
+  const userId = req.auth.userId;
+  try {
+    const posts = await Post.updateMany(
+      { _id: { $in: postsIds } },
+      { status: "available", boughtBy: userId }
+    );
+    return res.status(200).json({
+      message: "success",
+    });
+  } catch (error: any) {
+    return res.status(404).json({ message: error.message });
+  }
+};
+
 // get posts by user id
 export const getPostsByUserId = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -68,7 +85,6 @@ export const getPostsByUserId = async (req: Request, res: Response) => {
 // get posts that are available
 export const getAvailablePosts = async (req: Request, res: Response) => {
   try {
-
     const posts = (await Post.find({ status: "available" })) as PostType[];
 
     const postsWithUser = await getPostsWithUser({ posts: posts });
@@ -183,15 +199,15 @@ export const getPostsByPrice = async (req: Request, res: Response) => {
 };
 
 export const getPostsByFilters = async (req: Request, res: Response) => {
-  const filters = req.body.filters
-  console.log(req.body)
-  
+  const filters = req.body.filters;
+  console.log(req.body);
+
   try {
-    const posts = await Post.find({
+    const posts = (await Post.find({
       price: { $lte: filters.price },
-      genres: filters.genreId ,
+      genres: filters.genreId,
       status: "available",
-    }) as PostType[]
+    })) as PostType[];
     const postsWithUser = await getPostsWithUser({ posts: posts });
 
     res.status(200).json({ data: postsWithUser });
@@ -199,8 +215,6 @@ export const getPostsByFilters = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message });
   }
 };
-
-
 
 //create post
 
@@ -326,7 +340,6 @@ export const addPostToFavorites = async (req: Request, res: Response) => {
 
     const user = await users.getUser(userId);
 
-
     // check if favourites private metadata exists
     if (!user.privateMetadata.favourites) {
       await users.updateUser(userId, {
@@ -382,19 +395,20 @@ export const deletePost = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getPostsBySearch = async (req: Request, res: Response) => {
   const { searchQuery } = req.params;
   console.log(searchQuery);
-  
+
   try {
-    const posts = await Post.find({ title: { $regex: searchQuery, $options: "i"}, status: "available"}) as PostType[]
+    const posts = (await Post.find({
+      title: { $regex: searchQuery, $options: "i" },
+      status: "available",
+    })) as PostType[];
     const postsWithUser = await getPostsWithUser({ posts: posts });
 
     res.status(200).json({ data: postsWithUser });
-   
-  } catch (error: any){
-    console.log(error)
-    res.status(404).json({ message: error.message })
+  } catch (error: any) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
   }
-}
+};
