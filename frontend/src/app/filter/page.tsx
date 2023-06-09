@@ -5,7 +5,7 @@ import Filter from '@/components/filters/Filters'
 import PostGrid from '@/components/post/PostGrid'
 import { PostType } from '@/types/post.types'
 import { UserType } from '@/types/user.types'
-import { getFilteredPosts, getGenres } from '@/utils/utils'
+import { getFilteredPosts, getGenres } from '@/utils/fetchData'
 
 async function FilteredPostsPage() {
   const [posts, setPosts] = useState<{post: PostType, userInfo: UserType}[]>([])

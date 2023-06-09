@@ -1,6 +1,6 @@
-import Filter from "@/components/filters/Filters";
-import PostGrid from "@/components/post/PostGrid";
-import { getGenres, getPosts } from "@/utils/utils";
+import { getPosts, getGenres } from '@/utils/fetchData';
+import PostGrid from '@/components/post/PostGrid';
+import Filter from '@/components/filters/Filters';
 
 export default async function Home() {
   const userPosts = getPosts();
