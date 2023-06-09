@@ -65,7 +65,7 @@ export async function getFilteredPosts(filters: {
 }) {
   try {
     const response = await axios.post<{ post: PostType; userInfo: UserType }[]>(
-      `${url1}/posts/filters`,
+      `${url}/posts/filters`,
       { filters }
     );
     if ((response.status !== 200, !response.data)) {
@@ -83,7 +83,7 @@ export async function getUserProfile(createdBy: string) {
       firstName: string;
       lastName: string;
       profileImageUrl: string;
-    }>(`${url1}/users/profile/${createdBy}`);
+    }>(`${url}/users/profile/${createdBy}`);
     if ((response.status !== 200, !response.data)) {
       throw new Error("Failed to fetch data");
     }
@@ -96,7 +96,7 @@ export async function getAvilablePostsByUserId(createdBy: string) {
   try {
     const response = await axios.get<{
       data: { post: PostType; userInfo: UserType }[];
-    }>(`${url1}/posts/available/${createdBy}`);
+    }>(`${url}/posts/available/${createdBy}`);
     if ((response.status !== 200, !response.data)) {
       throw new Error("Failed to fetch data");
     }
@@ -109,7 +109,7 @@ export async function getSoldPostsByUserId(createdBy: string) {
   try {
     const response = await axios.get<{
       data: { post: PostType; userInfo: UserType }[];
-    }>(`${url1}/posts/sold/${createdBy}`);
+    }>(`${url}/posts/sold/${createdBy}`);
     if ((response.status !== 200, !response.data)) {
       throw new Error("Failed to fetch data");
     }
@@ -121,7 +121,7 @@ export async function getSoldPostsByUserId(createdBy: string) {
 export async function getPostsBySearch(searchQuery: string) {
   try {
     const response = await axios.get<{ post: PostType; userInfo: UserType }[]>(
-      `${url1}/posts/${searchQuery}`
+      `${url}/posts/${searchQuery}`
     );
     if ((response.status !== 200, !response.data)) {
       throw new Error("Failed to fetch data");
@@ -143,7 +143,7 @@ export async function addToFavorites(
       message: string;
       favourites: PostType[];
     }>(
-      `${url1}/posts/addFavorites/${id}`,
+      `${url}/posts/addFavorites/${id}`,
       {
         userId: userId,
       },
@@ -164,7 +164,7 @@ export async function getFavouritePosts(userId: string, token: string) {
     const response = await axios.put<{
       data: { post: PostType; userInfo: UserType }[];
     }>(
-      `${url1}/posts/favorites`,
+      `${url}/posts/favorites`,
       { userId: userId },
       { headers: { Authorization: token } }
     );

@@ -16,14 +16,14 @@ export default async function Page({ params }: IProps) {
   const res = await data.json();
 
   const otherPosts = await fetch(
-    `http://localhost:3001/posts/available/${res.data.post?.createdBy}`
+    `${API}/posts/available/${res.data.post?.createdBy}`
   );
 
   const otherPostsRes = await otherPosts.json().then((res) => res);
 
   return (
-    <div className="flex flex-col items-center gap-6 p-4 pt-0 my-8">
-      <div className=" flex flex-col sm:flex-row gap-8 sm:gap-28 mb-8">
+    <div className="my-8 flex flex-col items-center gap-6 p-4 pt-0">
+      <div className=" mb-8 flex flex-col gap-8 sm:flex-row sm:gap-28">
         <div className="mx-auto">
           <Image
             src={res.data.post?.imgs?.[0]}
@@ -68,7 +68,15 @@ export default async function Page({ params }: IProps) {
           <div>
             <h3>
               <span className=" font-bold">Posted By: </span>
-              <Link className="border-b-2 border-gray-400 focus:opacity-50 hover:opacity-50" href={`/seller/${res.data.post?.createdBy}`}>{res.data.userInfo?.firstName ? res.data.userInfo?.firstName : "User" } {res.data.userInfo?.lastName}</Link>
+              <Link
+                className="border-b-2 border-gray-400 hover:opacity-50 focus:opacity-50"
+                href={`/seller/${res.data.post?.createdBy}`}
+              >
+                {res.data.userInfo?.firstName
+                  ? res.data.userInfo?.firstName
+                  : "User"}{" "}
+                {res.data.userInfo?.lastName}
+              </Link>
             </h3>
           </div>
           <div className="mt-10">
@@ -82,7 +90,7 @@ export default async function Page({ params }: IProps) {
       </div>
       <div>
         <h2 className=" my-3 text-xl font-bold">Other posts by this user</h2>
-        <div className=" flex flex-row flex-wrap gap-6 justify-center">
+        <div className=" flex flex-row flex-wrap justify-center gap-6">
           {otherPostsRes?.slice(0, 3).map((post: any) => (
             <div className="flex flex-col gap-3" key={post._id}>
               <div className=" w-44 rounded-md border-2 p-2">

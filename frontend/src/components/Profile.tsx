@@ -65,7 +65,7 @@ function Profile({ profile, availablePosts, soldPosts, userId }: ProfileProps) {
   }
 
   return (
-    <div className="mx-auto p-8 text-center md:mt-8">
+    <div className="mx-auto max-w-full p-8 text-center md:mt-8">
       <div className="mb-4">
         <Image
           src={profileImageUrl}
@@ -75,7 +75,7 @@ function Profile({ profile, availablePosts, soldPosts, userId }: ProfileProps) {
           height={250}
         />
       </div>
-      {user && (
+      {user && userId && (
         <button
           className="inline-flex items-center justify-center gap-4 text-gray-500"
           onClick={() => setIsEditing(true)}
