@@ -11,7 +11,7 @@ This is a simple web application that allows users to search for secondhand book
   - [Clerk](https://github.com/clerkinc/javascript) - For auth
   - [UploadThing](https://github.com/pingdotgg/uploadthing) - For uploading files
   - [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) - For styling
-  - [Shadcn/ui](https://github.com/shadcn/ui) - for ui
+  - [Shadcn/ui](https://github.com/shadcn/ui) - for UI components
 - Backend
   - Node.js
   - Express
